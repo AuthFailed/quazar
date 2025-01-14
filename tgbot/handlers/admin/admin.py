@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 
 from tgbot.filters.admin import AdminFilter
 from tgbot.keyboards.admin.inline import admin_menu, admin_vpn_menu_core, to_home
-from tgbot.misc.marzban_api import get_system_stats, restart_core
+from tgbot.misc.marzban_api import get_system_stats, restart_core, get_core_config
 
 admin_router = Router()
 admin_router.message.filter(AdminFilter())
@@ -20,10 +20,11 @@ async def admin_start(message: Message):
 @admin_router.callback_query(F.data == "adminmenu")
 async def adminmenu(callback: CallbackQuery) -> None:
     """Главное меню"""
+    await callback.answer()
+
     await callback.message.edit_text("⭐ Главное меню <b>Квазар</b>\n\n"
                          "Я - бот проекта Квазар\n"
                          "<i>Используй кнопки ниже для администрирования</i>", reply_markup=admin_menu())
-    await callback.answer()
 
 @admin_router.callback_query(F.data == "adminmenu_serverstatus")
 async def adminmenu_serverstatus(callback: CallbackQuery) -> None:
@@ -58,15 +59,21 @@ async def adminmenu_nodes(callback: CallbackQuery) -> None:
 @admin_router.callback_query(F.data == "adminmenu_core")
 async def adminmenu_core(callback: CallbackQuery) -> None:
     """Меню управления ядром"""
-    await callback.message.edit_text("⭐ <b>Квазар</b>\n\n"
-                                     "Меню управления ядром Xray", reply_markup=admin_vpn_menu_core())
     await callback.answer()
 
-@admin_router.callback_query(F.data == "adminmenu_core_restartxray")
-async def adminmenu_core_restartxray(callback: CallbackQuery) -> None:
+    await callback.message.edit_text("⭐ <b>Квазар</b>\n\n"
+                                     "Меню управления ядром Xray", reply_markup=admin_vpn_menu_core())
+
+@admin_router.callback_query(F.data == "adminmenu_core_xray_config")
+async def adminmenu_core_xray_config(callback: CallbackQuery) -> None:
     """Проверка конфига ядра Xray"""
-    await restart_core()
     await callback.answer()
+
+    core_config = await get_core_config()
+    ready_message = ("⭐ <b>Квазар</b>\n\n"
+                     "Конфиг ядра:\n"
+                     f"<pre><code>{core_config}</code></pre>")
+    await callback.message.edit_text(ready_message, reply_markup=admin_vpn_menu_core())
 
 @admin_router.callback_query(F.data == "adminmenu_core_restartxray")
 async def adminmenu_core_restartxray(callback: CallbackQuery) -> None:

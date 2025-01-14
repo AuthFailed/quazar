@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from dotenv import load_dotenv
@@ -31,6 +32,15 @@ async def get_system_stats():
 
     await api.close()
     return formatted_stats
+
+async def get_core_config():
+    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
+    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
+
+    core_config = await api.get_core_config(token=token.access_token)
+    formatted_config = json.dumps(core_config, indent=2)
+    await api.close()
+    return formatted_config
 
 
 async def restart_core():
