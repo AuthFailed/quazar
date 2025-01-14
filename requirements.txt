@@ -1,0 +1,22 @@
+aiogram~=3.0
+environs~=9.0
+redis
+betterlogging~=1.0.0
+requests
+
+# # For enabling api:
+# backoff
+# ujson
+# yarl
+
+# # For PostgreSQL sqlalchemy + alembic:
+# sqlalchemy~=2.0
+# alembic~=1.0
+# asyncpg
+
+DateTime~=5.5
+marzban~=0.4.1
+typing_extensions~=4.12.2
+aiohttp~=3.11.11
+yarl~=1.18.3
+python-dotenv~=1.0.1
