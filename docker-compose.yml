@@ -1,7 +1,7 @@
 services:
   bot:
     image: "bot"
-    container_name: "nedomru_bot"
+    container_name: "quazar_bot"
     stop_signal: SIGINT
     build:
       context: .
