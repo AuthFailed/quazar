@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
 
-def user_menu(sub_link="https://google.com"):
+def user_menu(sub_link="https://google.com",):
     buttons = [
         [
             InlineKeyboardButton(text='Открыть подписку', web_app=WebAppInfo(url=sub_link))

@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
@@ -5,6 +7,7 @@ from dotenv import load_dotenv
 import os
 
 from tgbot.keyboards.user.inline import user_menu, to_home
+from tgbot.misc.marzban_api import get_user_by_id, format_bytes
 
 user_router = Router()
 load_dotenv()
@@ -33,9 +36,18 @@ async def user_start(message: Message):
     if not await is_user_in_channel(message.from_user.id, bot=message.bot):
         return
 
-    await message.answer("⭐ <b>Квазар | Главное меню</b>\n\n"
-                         "Я - бот проекта Квазар\n\n"
-                         "<i>Используй кнопки ниже для управления меню</i>", reply_markup=user_menu())
+    user = await get_user_by_id(user_id=message.from_user.id)
+    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+
+🎟️ Подписка: {"✅ Активна" if user.status == "active" else "❌ Не активна"}
+💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+
+Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
+Технический ID: {user.username}
+"""
+
+    await message.answer(ready_message,
+                         reply_markup=user_menu(sub_link=user.subscription_url))
 
 
 @user_router.callback_query(F.data == "usermenu")
@@ -45,9 +57,18 @@ async def usermenu(callback: CallbackQuery) -> None:
         await callback.answer()
         return
 
-    await callback.message.edit_text("⭐ <b>Квазар | Главное меню</b>\n\n"
-                                     "Я - бот проекта Квазар\n\n"
-                                     "<i>Используй кнопки ниже для управления мной</i>", reply_markup=user_menu())
+    user = await get_user_by_id(user_id=callback.from_user.id)
+    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+
+    🎟️ Подписка: {"✅ Активна" if user.status == "active" else "❌ Не активна"}
+    💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+
+    Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
+    Технический ID: <code>{user.username}</code>
+    """
+
+    await callback.message.edit_text(ready_message,
+                                     reply_markup=user_menu(sub_link=user.subscription_url))
     await callback.answer()
 
 

@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+from dataclasses import asdict
+
 from dotenv import load_dotenv
 
 from marzban import MarzbanAPI
@@ -33,6 +35,7 @@ async def get_system_stats():
     await api.close()
     return formatted_stats
 
+
 async def get_core_config():
     api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
     token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
@@ -41,6 +44,20 @@ async def get_core_config():
     formatted_config = json.dumps(core_config, indent=2)
     await api.close()
     return formatted_config
+
+
+async def get_user_by_id(user_id):
+    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
+    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
+
+    users_response = await api.get_users(
+        token=token.access_token,
+        search=str(user_id),
+        limit=1
+    )
+
+    await api.close()
+    return users_response.users[0] if users_response.users else None
 
 
 async def restart_core():
