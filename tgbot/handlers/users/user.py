@@ -81,7 +81,7 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
         await callback.answer()
         return
 
-    await callback.message.edit_text("""⭐ <b>Квазар | FAQ</b>
+    await callback.message.edit_text("""<b>⭐ Квазар | FAQ</b>
 
 <b>Доступные сервера</b>
 🇦🇹 Австрия - <code>152.53.109.159</code>
@@ -104,7 +104,7 @@ async def usermenu_revokesub(callback: CallbackQuery) -> None:
         await callback.answer()
         return
 
-    await callback.message.edit_text(f"""⭐ <b>Квазар | Обнуление подписки</b>
+    await callback.message.edit_text(f"""<b>⭐ Квазар | Обнуление подписки</b>
 
 ⚠️ <b>Внимание</b>
 Это действие <b>обнулит текущую ссылку на подписку</b>
@@ -126,7 +126,7 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     user = await get_user_by_id(user_id=callback.from_user.id)
     api_response = await revoke_user_sub(user.username)
 
-    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+    ready_message = f"""<b>⭐ Квазар | Главное меню</b>
 
 🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
 💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
