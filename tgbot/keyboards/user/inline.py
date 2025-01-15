@@ -11,7 +11,7 @@ def user_menu(sub_link="https://google.com",):
             InlineKeyboardButton(text="📜 Инструкции", callback_data="usermenu_instructions"),
         ],
         [
-            InlineKeyboardButton(text="Канал", url="https://t.me/+iP94bPGODz4wNGZi"),
+            InlineKeyboardButton(text="Канал", url="https://t.me/+LUD7ZdTFBrwxMTli"),
             InlineKeyboardButton(text="🚨 Помощь", url="https://t.me/roman_domru"),
         ],
         [
