@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from dotenv import load_dotenv
 import os
 
-from tgbot.keyboards.user.inline import user_menu, to_home
+from tgbot.keyboards.user.inline import user_menu, to_home, user_revoke_sub
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub
 
 user_router = Router()
@@ -96,8 +96,27 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
 
 
 @user_router.callback_query(F.data == "usermenu_revokesub")
-async def usermenu_faq(callback: CallbackQuery) -> None:
-    """Раздел FAQ"""
+async def usermenu_revokesub(callback: CallbackQuery) -> None:
+    """Меню обнуления подписки"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        await callback.answer()
+        return
+
+    await callback.message.edit_text(f"""⭐ <b>Квазар | Обнуление подписки</b>
+
+⚠️ <b>Внимание</b>
+Это действие <b>обнулит текущую ссылку на подписку</b>
+Все подключения, которые были настроены по текущей ссылке - <b>перестанут работать</b>
+
+Новую ссылку можно будет получить на странице подписки в главном меню
+
+<i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""", reply_markup=user_revoke_sub())
+    await callback.answer()
+
+
+@user_router.callback_query(F.data == "usermenu_revokesub_agree")
+async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
+    """Обнуление подписки пользователя"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         await callback.answer()
         return
@@ -105,5 +124,15 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
     user = await get_user_by_id(user_id=callback.from_user.id)
     api_response = await revoke_user_sub(user.username)
 
-    await callback.message.edit_reply_markup(reply_markup=user_menu(sub_link=api_response.subscription_url))
+    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+
+    🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
+    💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+
+    <b>Доп. инфо</b>
+    Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
+    Технический ID: <code>{user.username}</code>
+    """
+
+    await callback.message.edit_text(ready_message, reply_markup=user_menu(sub_link=api_response.subscription_url))
     await callback.answer("Ссылка на подписку обнулена")
