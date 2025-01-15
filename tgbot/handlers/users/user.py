@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from dotenv import load_dotenv
 import os
 
-from tgbot.keyboards.user.inline import user_menu, to_home
+from tgbot.keyboards.user.inline import user_menu, to_home, user_revoke_sub
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub
 
 user_router = Router()
@@ -97,7 +97,26 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
 
 @user_router.callback_query(F.data == "usermenu_revokesub")
 async def usermenu_faq(callback: CallbackQuery) -> None:
-    """Раздел FAQ"""
+    """Меню обнуления подписки"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        await callback.answer()
+        return
+
+    await callback.message.edit_text(f"""⭐ <b>Квазар | Обнуление подписки</b>
+
+⚠️ <b>Внимание</b>
+Это действие <b>обнулит текущую ссылку на подписку</b>
+Все подключения, которые были настроены по текущей ссылке - <b>перестанут работать</b>
+
+Новую ссылку можно будет получить на странице подписки в главном меню
+
+<i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""", reply_markup=user_revoke_sub())
+    await callback.answer()
+
+
+@user_router.callback_query(F.data == "usermenu_revokesub_agree")
+async def usermenu_faq(callback: CallbackQuery) -> None:
+    """Обнуление подписки пользователя"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         await callback.answer()
         return
