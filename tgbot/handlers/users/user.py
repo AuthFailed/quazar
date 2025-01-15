@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 import os
 
 from tgbot.keyboards.user.inline import user_menu, to_home, user_revoke_sub
-from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub
+from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
+    activate_user
 
 user_router = Router()
 load_dotenv()
@@ -36,7 +37,13 @@ async def user_start(message: Message):
     if not await is_user_in_channel(message.from_user.id, bot=message.bot):
         return
 
-    user = await get_user_by_id(user_id=message.from_user.id)
+    if not await is_user_created(message.from_user.id):
+        user = await create_user(message.from_user.id)
+    else:
+        user = await get_user_by_id(user_id=message.from_user.id)
+        if user.status != "active":
+            await activate_user(message.from_user.id)
+
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
 🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
@@ -58,7 +65,13 @@ async def usermenu(callback: CallbackQuery) -> None:
         await callback.answer()
         return
 
-    user = await get_user_by_id(user_id=callback.from_user.id)
+    if not await is_user_created(callback.from_user.id):
+        user = await create_user(callback.from_user.id)
+    else:
+        user = await get_user_by_id(user_id=callback.from_user.id)
+        if user.status != "active":
+            await activate_user(callback.from_user.id)
+
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
 🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
