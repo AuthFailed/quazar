@@ -39,6 +39,18 @@ def user_revoke_sub():
     return keyboard
 
 
+def channel_link():
+    buttons = [
+        [
+            InlineKeyboardButton(text="📡 Подписаться", url="https://t.me/+LUD7ZdTFBrwxMTli"),
+        ]
+    ]
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=buttons,
+    )
+    return keyboard
+
 def to_home():
     buttons = [
         [

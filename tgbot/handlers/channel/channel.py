@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 from tgbot.keyboards.admin.inline import accept_to_channel, leaved_user
+from tgbot.keyboards.user.inline import channel_link
 from tgbot.misc.marzban_api import deactivate_user
 
 load_dotenv()
@@ -68,6 +69,17 @@ async def on_user_leave(event: ChatMemberUpdated, bot: Bot):
         text=f"<b>Выход из канала</b>\nПользователь @{event.from_user.username} (ID: {event.from_user.id}) покинул канал\n"
              f"Аккаунт пользователя деактивирован",
         reply_markup=leaved_user(user_id=event.from_user.username)
+    )
+
+    await bot.send_message(
+        chat_id=event.from_user.id,
+        text=f"""<b>Выход из канала</b>
+        
+⚠️ <b>Внимание</b>
+Аккаунт деактивирован, VPN отключен
+
+Для возобновления доступа требуется подписаться на канал <b>Квазар</b>""",
+        reply_markup=channel_link()
     )
 
 @channel_router.callback_query(F.data == "accept_channel")
