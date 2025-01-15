@@ -8,6 +8,7 @@ from typing import Dict
 from datetime import datetime, timedelta
 
 from tgbot.keyboards.admin.inline import accept_to_channel, leaved_user
+from tgbot.misc.marzban_api import deactivate_user
 
 channel_router = Router()
 
@@ -54,10 +55,13 @@ async def handle_join_request(request: ChatJoinRequest, bot: Bot) -> None:
 
 @channel_router.chat_member(ChatMemberUpdatedFilter(IS_MEMBER >> IS_NOT_MEMBER))
 async def on_user_leave(event: ChatMemberUpdated, bot: Bot):
-    # Отправка уведомления админу
+    # Выход из канала
+    await deactivate_user(user_id=event.from_user.id)
+
     await bot.send_message(
         chat_id=6486127400,
-        text=f"<b>Выход из канала</b>\nПользователь @{event.from_user.username} (ID: {event.from_user.id}) покинул канал",
+        text=f"<b>Выход из канала</b>\nПользователь @{event.from_user.username} (ID: {event.from_user.id}) покинул канал\n"
+             f"Аккаунт пользователя деактивирован",
         reply_markup=leaved_user(user_id=event.from_user.username)
     )
 

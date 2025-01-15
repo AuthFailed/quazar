@@ -3,7 +3,7 @@ import os
 
 from dotenv import load_dotenv
 
-from marzban import MarzbanAPI
+from marzban import MarzbanAPI, UserModify
 
 load_dotenv()
 
@@ -68,6 +68,38 @@ async def revoke_user_sub(user_id):
     )
     await api.close()
     return api_response if api_response else None
+
+
+async def activate_user(user_id):
+    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
+    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
+
+    user = await get_user_by_id(user_id)
+    username = user.username
+
+    await api.modify_user(
+        token=token.access_token,
+        username=username,
+        user=UserModify(status="active")
+    )
+
+    await api.close()
+
+
+async def deactivate_user(user_id):
+    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
+    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
+
+    user = await get_user_by_id(user_id)
+    username = user.username
+
+    await api.modify_user(
+        token=token.access_token,
+        username=username,
+        user=UserModify(status="disabled")
+    )
+
+    await api.close()
 
 
 async def restart_core():
