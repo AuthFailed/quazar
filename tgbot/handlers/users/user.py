@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 from tgbot.keyboards.user.inline import user_menu, to_home
-from tgbot.misc.marzban_api import get_user_by_id, format_bytes
+from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub
 
 user_router = Router()
 load_dotenv()
@@ -39,11 +39,12 @@ async def user_start(message: Message):
     user = await get_user_by_id(user_id=message.from_user.id)
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-🎟️ Подписка: {"✅ Активна" if user.status == "active" else "❌ Не активна"}
+🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
 💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
+<b>Доп. инфо</b>
 Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-Технический ID: {user.username}
+Технический ID: <code>{user.username}</code>
 """
 
     await message.answer(ready_message,
@@ -60,12 +61,13 @@ async def usermenu(callback: CallbackQuery) -> None:
     user = await get_user_by_id(user_id=callback.from_user.id)
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-    🎟️ Подписка: {"✅ Активна" if user.status == "active" else "❌ Не активна"}
-    💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
+💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
-    Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-    Технический ID: <code>{user.username}</code>
-    """
+<b>Доп. инфо</b>
+Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
+Технический ID: <code>{user.username}</code>
+"""
 
     await callback.message.edit_text(ready_message,
                                      reply_markup=user_menu(sub_link=user.subscription_url))
@@ -75,6 +77,10 @@ async def usermenu(callback: CallbackQuery) -> None:
 @user_router.callback_query(F.data == "usermenu_faq")
 async def usermenu_faq(callback: CallbackQuery) -> None:
     """Раздел FAQ"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        await callback.answer()
+        return
+
     await callback.message.edit_text("⭐ <b>Квазар | FAQ</b>\n\n"
                                      "<b>Доступные сервера</b>\n"
                                      "Австрия - <code>152.53.109.159</code>\n"
@@ -87,3 +93,17 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
                                      "Поддерживаются все современные устройства, на которые есть приложения для подключения к VPN. Найти список доступных приложений можно на странице твоей подписки",
                                      reply_markup=to_home(), disable_web_page_preview=True)
     await callback.answer()
+
+
+@user_router.callback_query(F.data == "usermenu_revokesub")
+async def usermenu_faq(callback: CallbackQuery) -> None:
+    """Раздел FAQ"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        await callback.answer()
+        return
+
+    user = await get_user_by_id(user_id=callback.from_user.id)
+    api_response = await revoke_user_sub(user.username)
+
+    await callback.message.edit_reply_markup(reply_markup=user_menu(sub_link=api_response.subscription_url))
+    await callback.answer("Ссылка на подписку обнулена")

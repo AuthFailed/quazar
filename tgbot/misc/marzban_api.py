@@ -60,6 +60,18 @@ async def get_user_by_id(user_id):
     return users_response.users[0] if users_response.users else None
 
 
+async def revoke_user_sub(user_id):
+    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
+    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
+
+    api_response = await api.revoke_user_subscription(
+        user_id,
+        token=token.access_token,
+    )
+    await api.close()
+    return api_response if api_response else None
+
+
 async def restart_core():
     api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
     token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))

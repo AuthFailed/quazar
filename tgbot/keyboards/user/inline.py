@@ -13,7 +13,10 @@ def user_menu(sub_link="https://google.com",):
         [
             InlineKeyboardButton(text="Канал", url="https://t.me/+iP94bPGODz4wNGZi"),
             InlineKeyboardButton(text="🚨 Помощь", url="https://t.me/roman_domru"),
-        ]
+        ],
+        [
+            InlineKeyboardButton(text='Обнулить подписку', callback_data="usermenu_revokesub")
+        ],
     ]
 
     keyboard = InlineKeyboardMarkup(
