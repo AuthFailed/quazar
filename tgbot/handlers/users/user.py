@@ -78,7 +78,7 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-🎟️ Доступ: {"✅ Есть" if user_status else "❌ Нет"}
+🎟️ Статус аккаунта: {"✅ Включен" if user_status else "❌ Выключен"}
 💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
 <b>Доп. инфо</b>
@@ -177,11 +177,12 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
         return
 
     user = await get_user_by_id(user_id=callback.from_user.id)
+    user_status = True if user.status == "active" else False
     api_response = await revoke_user_sub(user.username)
 
     ready_message = f"""<b>⭐ Квазар | Главное меню</b>
 
-🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
+🎟️ Статус аккаунта: {"✅ Включен" if user_status else "❌ Выключен"}
 💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
 <b>Доп. инфо</b>
