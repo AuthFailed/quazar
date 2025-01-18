@@ -29,6 +29,9 @@ def usermenu_kb_sub(sub_link="https://google.com", sub_status: bool = True):
             InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
         ],
         [
+            InlineKeyboardButton(text='🔄 Обновить данные', callback_data="usermenu_sub")
+        ],
+        [
             InlineKeyboardButton(text="🔽 Выключить",
                                  callback_data="usermenu_changestatus") if sub_status else InlineKeyboardButton(
                 text="🔼 Включить", callback_data="usermenu_changestatus"),
