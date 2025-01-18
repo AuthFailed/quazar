@@ -65,8 +65,8 @@ async def usermenu(callback: CallbackQuery) -> None:
 @user_router.callback_query(F.data == "usermenu_sub")
 async def usermenu_sub(callback: CallbackQuery) -> None:
     """Меню подписки"""
+    await callback.answer("Загружаю подписку...")
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
-        await callback.answer()
         return
 
     if not await is_user_created(callback.from_user.id):
@@ -87,19 +87,17 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 """
 
     await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, sub_status=user_status))
-    await callback.answer()
+                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url,
+                                                                  sub_status=user_status))
 
 
 @user_router.callback_query(F.data == "usermenu_faq")
 async def usermenu_faq(callback: CallbackQuery) -> None:
     """Раздел FAQ"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
-        await callback.answer()
         return
 
-    user = await get_user_by_id(user_id=callback.from_user.id)
-
+    await callback.answer()
 
     await callback.message.edit_text("""<b>⭐ Квазар | FAQ</b>
 
@@ -114,16 +112,15 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
 <b>Поддержка устройств</b>
 Поддерживаются все современные устройства, на которые есть приложения для подключения к VPN. Найти список доступных приложений можно на странице твоей подписки""",
                                      reply_markup=to_home(), disable_web_page_preview=True)
-    await callback.answer()
 
 
 @user_router.callback_query(F.data == "usermenu_changestatus")
 async def usermenu_changestatus(callback: CallbackQuery) -> None:
     """Изменение статуса аккаунта"""
-    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
-        await callback.answer()
-        return
+    await callback.answer("Меняю статус аккаунта...")
 
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        return
     user = await get_user_by_id(user_id=callback.from_user.id)
     user_status = True if user.status == "active" else False
 
@@ -145,17 +142,17 @@ async def usermenu_changestatus(callback: CallbackQuery) -> None:
 """
 
     await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, sub_status=new_user_status))
+                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url,
+                                                                  sub_status=new_user_status))
 
-    await callback.answer()
 
 @user_router.callback_query(F.data == "usermenu_revokesub")
 async def usermenu_revokesub(callback: CallbackQuery) -> None:
     """Меню обнуления подписки"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
-        await callback.answer()
         return
 
+    await callback.answer()
     await callback.message.edit_text(f"""<b>⭐ Квазар | Обнуление подписки</b>
 
 ⚠️ <b>Внимание</b>
@@ -166,16 +163,15 @@ async def usermenu_revokesub(callback: CallbackQuery) -> None:
 
 <i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""",
                                      reply_markup=usermenu_revokesub())
-    await callback.answer()
 
 
 @user_router.callback_query(F.data == "usermenu_revokesub_agree")
 async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     """Обнуление подписки пользователя"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
-        await callback.answer()
         return
 
+    await callback.answer("Обнуляю подписку...")
     user = await get_user_by_id(user_id=callback.from_user.id)
     user_status = True if user.status == "active" else False
     api_response = await revoke_user_sub(user.username)
@@ -191,4 +187,3 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     """
 
     await callback.message.edit_text(ready_message, reply_markup=usermenu_main(sub_link=api_response.subscription_url))
-    await callback.answer("Ссылка на подписку обнулена")

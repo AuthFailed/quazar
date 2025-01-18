@@ -29,6 +29,7 @@ async def adminmenu(callback: CallbackQuery) -> None:
 @admin_router.callback_query(F.data == "adminmenu_serverstatus")
 async def adminmenu_serverstatus(callback: CallbackQuery) -> None:
     """Статус сервера"""
+    await callback.answer("Проверяю статус сервера...")
     server_stats = await get_system_stats()
 
     await callback.message.edit_text("⭐ <b>Квазар</b>\n\n"
@@ -44,17 +45,16 @@ async def adminmenu_serverstatus(callback: CallbackQuery) -> None:
                                      f"<b>Скорость</b>\n"
                                      f"Вход: {server_stats['incoming_bandwidth_speed']} ⬇️\n"
                                      f"Исход: {server_stats['outgoing_bandwidth_speed']} ⬆️", reply_markup=to_home())
-    await callback.answer()
 
 @admin_router.callback_query(F.data == "adminmenu_users")
 async def adminmenu_users(callback: CallbackQuery) -> None:
     """Пользователи VPN"""
-    await callback.answer()
+    await callback.answer("Загружаю данные пользователей...")
 
 @admin_router.callback_query(F.data == "adminmenu_nodes")
 async def adminmenu_nodes(callback: CallbackQuery) -> None:
     """Ноды"""
-    await callback.answer()
+    await callback.answer("Загружаю данные нодов...")
 
 @admin_router.callback_query(F.data == "adminmenu_core")
 async def adminmenu_core(callback: CallbackQuery) -> None:
@@ -67,7 +67,7 @@ async def adminmenu_core(callback: CallbackQuery) -> None:
 @admin_router.callback_query(F.data == "adminmenu_core_xray_config")
 async def adminmenu_core_xray_config(callback: CallbackQuery) -> None:
     """Проверка конфига ядра Xray"""
-    await callback.answer()
+    await callback.answer("Загружаю конфиг ядра...")
 
     core_config = await get_core_config()
     ready_message = ("⭐ <b>Квазар</b>\n\n"
