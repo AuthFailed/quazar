@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
-    usermenu_kb_revokesub, usermenu_kb_main
+    usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
     activate_user, deactivate_user
 
@@ -115,7 +115,44 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
                                      reply_markup=to_home(), disable_web_page_preview=True)
 
 
+
 @user_router.callback_query(F.data == "usermenu_changestatus")
+async def usermenu_revokesub(callback: CallbackQuery) -> None:
+    """Меню изменения статуса аккаунта"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        return
+
+    await callback.answer()
+
+    user = await get_user_by_id(user_id=callback.from_user.id)
+
+    activate_message = f"""<b>⭐ Квазар | Включение аккаунта</b>
+
+⚠️ <b>Внимание</b>
+Это действие <b>активирует аккаунт</b>
+Все подключения - <b>восстановятся, сеть заработает</b>
+
+Выключить аккаунт повторно можно в том же меню"""
+
+    deactivate_message = f"""<b>⭐ Квазар | Отключение аккаунта</b>
+    
+⚠️ <b>Внимание</b>
+Это действие <b>деактивирует аккаунт</b>
+Все подключения - <b>перестанут работать</b>, в том числе текущие активные
+    
+Включить аккаунт обратно можно в том же меню
+    
+<i>Рекомендуется выполнять это действие если к твоим подключениям кто-то получил доступ</i>"""
+
+    if user.status == "active":
+        await callback.message.edit_text(deactivate_message,
+                                         reply_markup=usermenu_kb_changestatus())
+    else:
+        await callback.message.edit_text(activate_message,
+                                         reply_markup=usermenu_kb_changestatus())
+
+
+@user_router.callback_query(F.data == "usermenu_changestatus_agree")
 async def usermenu_changestatus(callback: CallbackQuery) -> None:
     """Изменение статуса аккаунта"""
     await callback.answer("Меняю статус аккаунта...")
@@ -175,7 +212,7 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     await callback.answer("Обнуляю подписку...")
     user = await get_user_by_id(user_id=callback.from_user.id)
     user_status = True if user.status == "active" else False
-    api_response = await revoke_user_sub(user.username)
+    await revoke_user_sub(user.username)
 
     ready_message = f"""<b>⭐ Квазар | Главное меню</b>
 

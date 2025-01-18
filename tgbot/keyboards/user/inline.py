@@ -45,6 +45,20 @@ def usermenu_kb_sub(sub_link="https://google.com", sub_status: bool = True):
     return keyboard
 
 
+def usermenu_kb_changestatus():
+    buttons = [
+        [
+            InlineKeyboardButton(text="🔥 Подтвердить", callback_data="usermenu_changestatus_agree"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_sub"),
+        ]
+    ]
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=buttons,
+    )
+    return keyboard
+
+
 def usermenu_kb_revokesub():
     buttons = [
         [
