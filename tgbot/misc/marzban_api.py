@@ -9,6 +9,7 @@ from marzban import MarzbanAPI, UserModify, UserCreate, ProxySettings
 
 load_dotenv()
 
+
 # Действия с пользователями
 async def create_user(user_id):
     """Создание пользователя"""
@@ -17,7 +18,8 @@ async def create_user(user_id):
                                 password=os.environ.get('MARZBAN_PASSWORD'))
 
     new_user = UserCreate(username=generate_username(), proxies={"vless": ProxySettings(flow="xtls-rprx-vision")},
-                          inbounds={'vless': ['VLESS + TCP + REALITY']}, status="active", data_limit=107374182400, note=str(user_id), data_limit_reset_strategy="month")
+                          inbounds={'vless': ['VLESS + TCP + REALITY']}, status="active", data_limit=107374182400,
+                          note=str(user_id), data_limit_reset_strategy="month")
     new_user = await api.add_user(user=new_user, token=token.access_token)
     return new_user
 
@@ -29,6 +31,7 @@ async def is_user_created(user_id):
     else:
         return user
 
+
 async def activate_user(user_id):
     """Активация пользователя"""
     api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
@@ -38,13 +41,14 @@ async def activate_user(user_id):
     user = await get_user_by_id(user_id)
     username = user.username
 
-    await api.modify_user(
+    user = await api.modify_user(
         token=token.access_token,
         username=username,
         user=UserModify(status="active")
     )
 
     await api.close()
+    return user
 
 
 async def deactivate_user(user_id):
@@ -55,13 +59,14 @@ async def deactivate_user(user_id):
     user = await get_user_by_id(user_id)
     username = user.username
 
-    await api.modify_user(
+    user = await api.modify_user(
         token=token.access_token,
         username=username,
         user=UserModify(status="disabled")
     )
 
     await api.close()
+    return user
 
 
 async def get_user_by_id(user_id):
@@ -90,6 +95,7 @@ async def revoke_user_sub(user_id):
     )
     await api.close()
     return api_response if api_response else None
+
 
 # Действия с ядром
 async def get_system_stats():

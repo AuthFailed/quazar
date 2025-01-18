@@ -6,9 +6,9 @@ from aiogram.types import Message, CallbackQuery
 from dotenv import load_dotenv
 import os
 
-from tgbot.keyboards.user.inline import usermenu_main, to_home, usermenu_revokesub, usermenu_sub
+from tgbot.keyboards.user.inline import usermenu_main, to_home, usermenu_revokesub, usermenu_kb_sub
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
-    activate_user
+    activate_user, deactivate_user
 
 user_router = Router()
 load_dotenv()
@@ -63,7 +63,7 @@ async def usermenu(callback: CallbackQuery) -> None:
 
 
 @user_router.callback_query(F.data == "usermenu_sub")
-async def usermenu(callback: CallbackQuery) -> None:
+async def usermenu_sub(callback: CallbackQuery) -> None:
     """Меню подписки"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         await callback.answer()
@@ -73,12 +73,12 @@ async def usermenu(callback: CallbackQuery) -> None:
         user = await create_user(callback.from_user.id)
     else:
         user = await get_user_by_id(user_id=callback.from_user.id)
-        if user.status != "active":
-            await activate_user(callback.from_user.id)
+
+    user_status = True if user.status == "active" else False
 
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
+🎟️ Доступ: {"✅ Есть" if user_status else "❌ Нет"}
 💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
 <b>Доп. инфо</b>
@@ -87,8 +87,9 @@ async def usermenu(callback: CallbackQuery) -> None:
 """
 
     await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_sub(sub_link=user.subscription_url))
+                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, sub_status=user_status))
     await callback.answer()
+
 
 @user_router.callback_query(F.data == "usermenu_faq")
 async def usermenu_faq(callback: CallbackQuery) -> None:
@@ -96,6 +97,9 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         await callback.answer()
         return
+
+    user = await get_user_by_id(user_id=callback.from_user.id)
+
 
     await callback.message.edit_text("""<b>⭐ Квазар | FAQ</b>
 
@@ -113,6 +117,38 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
+@user_router.callback_query(F.data == "usermenu_changestatus")
+async def usermenu_changestatus(callback: CallbackQuery) -> None:
+    """Изменение статуса аккаунта"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        await callback.answer()
+        return
+
+    user = await get_user_by_id(user_id=callback.from_user.id)
+    user_status = True if user.status == "active" else False
+
+    if user_status:
+        new_user = await deactivate_user(callback.from_user.id)
+    else:
+        new_user = await activate_user(callback.from_user.id)
+
+    new_user_status = True if new_user.status == "active" else False
+
+    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+
+🎟️ Статус аккаунта: {"✅ Включен" if new_user_status else "❌ Выключен"}
+💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+
+<b>Доп. инфо</b>
+Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
+Технический ID: <code>{user.username}</code>
+"""
+
+    await callback.message.edit_text(ready_message,
+                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, sub_status=new_user_status))
+
+    await callback.answer()
+
 @user_router.callback_query(F.data == "usermenu_revokesub")
 async def usermenu_revokesub(callback: CallbackQuery) -> None:
     """Меню обнуления подписки"""
@@ -128,7 +164,8 @@ async def usermenu_revokesub(callback: CallbackQuery) -> None:
 
 Новую ссылку можно будет получить на странице подписки в главном меню
 
-<i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""", reply_markup=usermenu_revokesub())
+<i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""",
+                                     reply_markup=usermenu_revokesub())
     await callback.answer()
 
 

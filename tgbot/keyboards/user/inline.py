@@ -23,12 +23,15 @@ def usermenu_main():
     return keyboard
 
 
-def usermenu_sub(sub_link="https://google.com"):
+def usermenu_kb_sub(sub_link="https://google.com", sub_status: bool = True):
     buttons = [
         [
             InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
         ],
         [
+            InlineKeyboardButton(text="🔽 Выключить",
+                                 callback_data="usermenu_changestatus") if sub_status else InlineKeyboardButton(
+                text="🔼 Включить", callback_data="usermenu_changestatus"),
             InlineKeyboardButton(text='🔥 Обнулить подписку', callback_data="usermenu_revokesub")
         ],
         [
@@ -67,6 +70,7 @@ def channel_link():
         inline_keyboard=buttons,
     )
     return keyboard
+
 
 def to_home():
     buttons = [
