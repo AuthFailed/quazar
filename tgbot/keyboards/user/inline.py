@@ -1,10 +1,10 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
 
-def user_menu(sub_link="https://google.com", ):
+def usermenu_main():
     buttons = [
         [
-            InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
+            InlineKeyboardButton(text='😎 Подписка', callback_data="usermenu_sub")
         ],
         [
             InlineKeyboardButton(text="📜 FAQ", callback_data="usermenu_faq"),
@@ -14,9 +14,7 @@ def user_menu(sub_link="https://google.com", ):
             InlineKeyboardButton(text="📡 Канал", url="https://t.me/+LUD7ZdTFBrwxMTli"),
             InlineKeyboardButton(text="🚨 Помощь", url="https://t.me/roman_domru"),
         ],
-        [
-            InlineKeyboardButton(text='🔥 Обнулить подписку', callback_data="usermenu_revokesub")
-        ],
+
     ]
 
     keyboard = InlineKeyboardMarkup(
@@ -25,7 +23,26 @@ def user_menu(sub_link="https://google.com", ):
     return keyboard
 
 
-def user_revoke_sub():
+def usermenu_sub(sub_link="https://google.com"):
+    buttons = [
+        [
+            InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
+        ],
+        [
+            InlineKeyboardButton(text='🔥 Обнулить подписку', callback_data="usermenu_revokesub")
+        ],
+        [
+            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+        ]
+    ]
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=buttons,
+    )
+    return keyboard
+
+
+def usermenu_revokesub():
     buttons = [
         [
             InlineKeyboardButton(text="🔥 Подтвердить", callback_data="usermenu_revokesub_agree"),

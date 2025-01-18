@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from dotenv import load_dotenv
 import os
 
-from tgbot.keyboards.user.inline import user_menu, to_home, user_revoke_sub
+from tgbot.keyboards.user.inline import usermenu_main, to_home, usermenu_revokesub, usermenu_sub
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
     activate_user
 
@@ -37,30 +37,34 @@ async def user_start(message: Message):
     if not await is_user_in_channel(message.from_user.id, bot=message.bot):
         return
 
-    if not await is_user_created(message.from_user.id):
-        user = await create_user(message.from_user.id)
-    else:
-        user = await get_user_by_id(user_id=message.from_user.id)
-        if user.status != "active":
-            await activate_user(message.from_user.id)
-
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-🎟️ Доступ: {"✅ Есть" if user.status == "active" else "❌ Нет"}
-💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
-
-<b>Доп. инфо</b>
-Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-Технический ID: <code>{user.username}</code>
+Используй кнопки ниже для управления ботом
 """
 
     await message.answer(ready_message,
-                         reply_markup=user_menu(sub_link=user.subscription_url))
+                         reply_markup=usermenu_main())
 
 
 @user_router.callback_query(F.data == "usermenu")
 async def usermenu(callback: CallbackQuery) -> None:
     """Главное меню"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        await callback.answer()
+        return
+
+    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+
+Используй кнопки ниже для управления ботом
+"""
+
+    await callback.message.edit_text(ready_message, reply_markup=usermenu_main())
+    await callback.answer()
+
+
+@user_router.callback_query(F.data == "usermenu_sub")
+async def usermenu(callback: CallbackQuery) -> None:
+    """Меню подписки"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         await callback.answer()
         return
@@ -83,9 +87,8 @@ async def usermenu(callback: CallbackQuery) -> None:
 """
 
     await callback.message.edit_text(ready_message,
-                                     reply_markup=user_menu(sub_link=user.subscription_url))
+                                     reply_markup=usermenu_sub(sub_link=user.subscription_url))
     await callback.answer()
-
 
 @user_router.callback_query(F.data == "usermenu_faq")
 async def usermenu_faq(callback: CallbackQuery) -> None:
@@ -125,7 +128,7 @@ async def usermenu_revokesub(callback: CallbackQuery) -> None:
 
 Новую ссылку можно будет получить на странице подписки в главном меню
 
-<i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""", reply_markup=user_revoke_sub())
+<i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""", reply_markup=usermenu_revokesub())
     await callback.answer()
 
 
@@ -149,5 +152,5 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
 Технический ID: <code>{user.username}</code>
     """
 
-    await callback.message.edit_text(ready_message, reply_markup=user_menu(sub_link=api_response.subscription_url))
+    await callback.message.edit_text(ready_message, reply_markup=usermenu_main(sub_link=api_response.subscription_url))
     await callback.answer("Ссылка на подписку обнулена")
