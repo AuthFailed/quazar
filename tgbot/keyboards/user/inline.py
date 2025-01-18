@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
 
-def usermenu_main():
+def usermenu_kb_main():
     buttons = [
         [
             InlineKeyboardButton(text='😎 Подписка', callback_data="usermenu_sub")
@@ -45,7 +45,7 @@ def usermenu_kb_sub(sub_link="https://google.com", sub_status: bool = True):
     return keyboard
 
 
-def usermenu_revokesub():
+def usermenu_kb_revokesub():
     buttons = [
         [
             InlineKeyboardButton(text="🔥 Подтвердить", callback_data="usermenu_revokesub_agree"),

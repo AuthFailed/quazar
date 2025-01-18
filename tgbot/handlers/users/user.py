@@ -6,7 +6,8 @@ from aiogram.types import Message, CallbackQuery
 from dotenv import load_dotenv
 import os
 
-from tgbot.keyboards.user.inline import usermenu_main, to_home, usermenu_revokesub, usermenu_kb_sub
+from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
+    usermenu_kb_revokesub, usermenu_kb_main
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
     activate_user, deactivate_user
 
@@ -43,7 +44,7 @@ async def user_start(message: Message):
 """
 
     await message.answer(ready_message,
-                         reply_markup=usermenu_main())
+                         reply_markup=usermenu_kb_main())
 
 
 @user_router.callback_query(F.data == "usermenu")
@@ -58,7 +59,7 @@ async def usermenu(callback: CallbackQuery) -> None:
 Используй кнопки ниже для управления ботом
 """
 
-    await callback.message.edit_text(ready_message, reply_markup=usermenu_main())
+    await callback.message.edit_text(ready_message, reply_markup=usermenu_kb_main())
     await callback.answer()
 
 
@@ -162,7 +163,7 @@ async def usermenu_revokesub(callback: CallbackQuery) -> None:
 Новую ссылку можно будет получить на странице подписки в главном меню
 
 <i>Рекомендуется выполнять это действие если к твоей ссылки кто-то получил доступ</i>""",
-                                     reply_markup=usermenu_revokesub())
+                                     reply_markup=usermenu_kb_revokesub())
 
 
 @user_router.callback_query(F.data == "usermenu_revokesub_agree")
@@ -186,4 +187,4 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
 Технический ID: <code>{user.username}</code>
     """
 
-    await callback.message.edit_text(ready_message, reply_markup=usermenu_main(sub_link=api_response.subscription_url))
+    await callback.message.edit_text(ready_message, reply_markup=usermenu_kb_main())
