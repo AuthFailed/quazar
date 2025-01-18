@@ -32,7 +32,7 @@ def usermenu_kb_sub(sub_link="https://google.com", sub_status: bool = True):
             InlineKeyboardButton(text="🔽 Выключить",
                                  callback_data="usermenu_changestatus") if sub_status else InlineKeyboardButton(
                 text="🔼 Включить", callback_data="usermenu_changestatus"),
-            InlineKeyboardButton(text='🔥 Обнулить подписку', callback_data="usermenu_revokesub")
+            InlineKeyboardButton(text='🔥 Сбросить', callback_data="usermenu_revokesub")
         ],
         [
             InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
