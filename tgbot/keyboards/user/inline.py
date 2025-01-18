@@ -49,7 +49,7 @@ def usermenu_kb_revokesub():
     buttons = [
         [
             InlineKeyboardButton(text="🔥 Подтвердить", callback_data="usermenu_revokesub_agree"),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_sub"),
         ]
     ]
 
