@@ -27,8 +27,7 @@ async def ios_app_instructions(callback: CallbackQuery) -> None:
 
 <b>Простой вариант</b>
 1. Установи приложение <a href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532">Hiddify</a>
-2. <a href="{user.subscription_url}">Нажми сюда</a> для открытия подписки
-3. В открывшеся окне найди iOS - Hiddify и нажми <code>Добавить в приложение</code>
+2. <a href="{user.subscription_url}">Нажми сюда</a>, найди iOS - Hiddify и нажми <code>Добавить в приложение</code>
 
 <b>Продвинутый вариант</b>
 1. Установи приложение <a href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532">Hiddify</a>
