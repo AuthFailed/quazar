@@ -84,11 +84,11 @@ def instructions_pickdevice():
         ],
         [
             InlineKeyboardButton(text="🖥 Windows", callback_data="instructions_windows"),
-            InlineKeyboardButton(text="💻 Apple", callback_data="instructions_apple"),
+            InlineKeyboardButton(text="💻 Apple (нет)", callback_data="instructions_apple"),
         ],
         [
-            InlineKeyboardButton(text="📱 Linux", callback_data="instructions_linux"),
-            InlineKeyboardButton(text="📺 AndroidTV", callback_data="instructions_androidtv"),
+            InlineKeyboardButton(text="📱 Linux (нет)", callback_data="instructions_linux"),
+            InlineKeyboardButton(text="📺 AndroidTV (нет)", callback_data="instructions_androidtv"),
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu"),

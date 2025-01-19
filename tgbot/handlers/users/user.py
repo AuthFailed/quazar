@@ -8,7 +8,7 @@ import os
 
 from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
     usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, instructions_pickdevice
-from tgbot.keyboards.user.instructions import ios_apps
+from tgbot.keyboards.user.instructions import ios_apps, android_apps, windows_apps
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
     activate_user, deactivate_user
 
@@ -130,7 +130,7 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
                                      reply_markup=instructions_pickdevice())
 
 
-@user_router.callback_query(lambda c: c.data.startswith("instructions_ios"))
+@user_router.callback_query(lambda c: c.data.startswith("instructions_"))
 async def usermenu_instructions(callback: CallbackQuery) -> None:
     """Раздел инструкций"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
@@ -139,7 +139,6 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
     await callback.answer()
 
     device = callback.data.split('_')[1]
-    message = None
     if device == "ios":
         message = """<b>⭐ Квазар | Инструкции для iOS</b>
         
@@ -148,8 +147,28 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
 Если не знаешь какое выбрать - бери то, что помечено <b>🔥огоньком</b>
 Это рекомендуемое приложение для твоего устройства"""
 
-    await callback.message.edit_text(message,
+        await callback.message.edit_text(message,
                                      reply_markup=ios_apps())
+    elif device == "android":
+        message = """<b>⭐ Квазар | Инструкции для Android</b>
+
+Выбери приложение в списке ниже
+
+Если не знаешь какое выбрать - бери то, что помечено <b>🔥огоньком</b>
+Это рекомендуемое приложение для твоего устройства"""
+
+        await callback.message.edit_text(message,
+                                         reply_markup=android_apps())
+    elif device == "windows":
+        message = """<b>⭐ Квазар | Инструкции для Windows</b>
+
+Выбери приложение в списке ниже
+
+Если не знаешь какое выбрать - бери то, что помечено <b>🔥огоньком</b>
+Это рекомендуемое приложение для твоего устройства"""
+
+        await callback.message.edit_text(message,
+                                         reply_markup=windows_apps())
 
 
 @user_router.callback_query(F.data == "usermenu_changestatus")
