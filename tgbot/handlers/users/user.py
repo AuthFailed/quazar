@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 import os
 
 from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
-    usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus
+    usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, instructions_pickdevice
+from tgbot.keyboards.user.instructions import ios_apps
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
     activate_user, deactivate_user
 
@@ -114,6 +115,41 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
 Поддерживаются все современные устройства, на которые есть приложения для подключения к VPN. Найти список доступных приложений можно на странице твоей подписки""",
                                      reply_markup=to_home(), disable_web_page_preview=True)
 
+
+@user_router.callback_query(F.data == "usermenu_instructions")
+async def usermenu_instructions(callback: CallbackQuery) -> None:
+    """Раздел инструкций"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        return
+
+    await callback.answer()
+
+    await callback.message.edit_text("""<b>⭐ Квазар | Инструкции</b>
+
+Выбери свое устройство для просмотра инструкции""",
+                                     reply_markup=instructions_pickdevice())
+
+
+@user_router.callback_query(lambda c: c.data.startswith("instructions_ios"))
+async def usermenu_instructions(callback: CallbackQuery) -> None:
+    """Раздел инструкций"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        return
+
+    await callback.answer()
+
+    device = callback.data.split('_')[1]
+    message = None
+    if device == "ios":
+        message = """<b>⭐ Квазар | Инструкции для iOS</b>
+        
+Выбери приложение в списке ниже
+
+Если не знаешь какое выбрать - бери то, что помечено <b>🔥огоньком</b>
+Это рекомендуемое приложение для твоего устройства"""
+
+    await callback.message.edit_text(message,
+                                     reply_markup=ios_apps())
 
 
 @user_router.callback_query(F.data == "usermenu_changestatus")

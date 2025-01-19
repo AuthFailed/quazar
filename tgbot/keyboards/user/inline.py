@@ -76,6 +76,31 @@ def usermenu_kb_revokesub():
     return keyboard
 
 
+def instructions_pickdevice():
+    buttons = [
+        [
+            InlineKeyboardButton(text="📱 iPhone / iPad", callback_data="instructions_ios"),
+            InlineKeyboardButton(text="🤖 Android", callback_data="instructions_android"),
+        ],
+        [
+            InlineKeyboardButton(text="🖥 Windows", callback_data="instructions_windows"),
+            InlineKeyboardButton(text="💻 Apple", callback_data="instructions_apple"),
+        ],
+        [
+            InlineKeyboardButton(text="📱 Linux", callback_data="instructions_linux"),
+            InlineKeyboardButton(text="📺 AndroidTV", callback_data="instructions_androidtv"),
+        ],
+        [
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu"),
+        ],
+    ]
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=buttons,
+    )
+    return keyboard
+
+
 def channel_link():
     buttons = [
         [
