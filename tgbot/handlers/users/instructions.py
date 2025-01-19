@@ -23,11 +23,11 @@ async def ios_app_instructions(callback: CallbackQuery) -> None:
     user = await get_user_by_id(user_id=callback.from_user.id)
 
     if app == "hiddify":
-        message = f"""<b>⭐ Квазар | Инструкция для iOS - Hiddify</b>
+        message = f"""<b>⭐ Квазар | Инструкция для iOS / Hiddify</b>
 
 <b>Простой вариант</b>
 1. Установи приложение <a href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532">Hiddify</a>
-2. В главном меню Квазар нажми <code>Подписка - Открыть подписку</code>
+2. <a href="{user.subscription_url}">Нажми сюда</a> для открытия подписки
 3. В открывшеся окне найди iOS - Hiddify и нажми <code>Добавить в приложение</code>
 
 <b>Продвинутый вариант</b>
