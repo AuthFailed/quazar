@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 
 
 def ios_apps():
@@ -19,6 +19,7 @@ def ios_apps():
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
+            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
         ],
     ]
 
@@ -34,11 +35,12 @@ def android_apps():
             InlineKeyboardButton(text="🔥 Hiddify", callback_data="android_app_hiddify"),
         ],
         [
-            InlineKeyboardButton(text="V2RayNG", callback_data="android_app_v2ray"),
+            InlineKeyboardButton(text="V2RayNG", callback_data="android_app_v2rayng"),
             InlineKeyboardButton(text="Happ", callback_data="android_app_happ"),
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
+            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
         ],
     ]
 
@@ -62,6 +64,7 @@ def windows_apps():
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
+            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
         ],
     ]
 
@@ -71,7 +74,7 @@ def windows_apps():
     return keyboard
 
 
-def back_to_apps(device):
+def back_to_apps(device, sub_link=None):
     device_apps = None
     match device:
         case "ios":
@@ -87,12 +90,16 @@ def back_to_apps(device):
         case "androidtv":
             device_apps = "instructions_androidtv"
 
-    buttons = [
-        [
-            InlineKeyboardButton(text="⬅️ Назад", callback_data=device_apps),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
-        ],
-    ]
+    buttons = []
+    if sub_link:
+        buttons.append([
+            InlineKeyboardButton(text="😎 Открыть подписку", web_app=WebAppInfo(url=sub_link))
+        ])
+
+    buttons.append([
+        InlineKeyboardButton(text="⬅️ Назад", callback_data=device_apps),
+        InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+    ])
 
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=buttons,
