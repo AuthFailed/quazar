@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
-    usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, instructions_pickdevice
+    usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, setup_pickdevice
 from tgbot.keyboards.user.instructions import ios_apps, android_apps, windows_apps
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
     activate_user, deactivate_user
@@ -95,13 +95,13 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 
 @user_router.callback_query(F.data == "usermenu_faq")
 async def usermenu_faq(callback: CallbackQuery) -> None:
-    """Раздел FAQ"""
+    """Раздел О проекте"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         return
 
     await callback.answer()
 
-    await callback.message.edit_text("""<b>⭐ Квазар | FAQ</b>
+    await callback.message.edit_text("""<b>⭐ Квазар | О проекте</b>
 
 <b>Доступные сервера</b>
 🇦🇹 Австрия - <code>152.53.109.159</code>
@@ -116,9 +116,9 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
                                      reply_markup=to_home(), disable_web_page_preview=True)
 
 
-@user_router.callback_query(F.data == "usermenu_instructions")
+@user_router.callback_query(F.data == "usermenu_setup")
 async def usermenu_instructions(callback: CallbackQuery) -> None:
-    """Раздел инструкций"""
+    """Раздел подключения"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         return
 
@@ -126,11 +126,11 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
 
     await callback.message.edit_text("""<b>⭐ Квазар | Выбор устройства</b>
 
-Выбери свое устройство для просмотра инструкции""",
-                                     reply_markup=instructions_pickdevice())
+Выбери свое устройство для просмотра инструкции по подключению""",
+                                     reply_markup=setup_pickdevice())
 
 
-@user_router.callback_query(lambda c: c.data.startswith("instructions_"))
+@user_router.callback_query(lambda c: c.data.startswith("setup_"))
 async def usermenu_instructions(callback: CallbackQuery) -> None:
     """Раздел инструкций"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):

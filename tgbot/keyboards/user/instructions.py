@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def ios_apps():
@@ -18,8 +18,8 @@ def ios_apps():
             InlineKeyboardButton(text="SingBox", callback_data="ios_app_singbox"),
         ],
         [
-            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ],
     ]
 
@@ -39,8 +39,8 @@ def android_apps():
             InlineKeyboardButton(text="Happ", callback_data="android_app_happ"),
         ],
         [
-            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ],
     ]
 
@@ -63,8 +63,8 @@ def windows_apps():
             InlineKeyboardButton(text="InvisibleMan", callback_data="windows_app_invisibleman"),
         ],
         [
-            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ],
     ]
 
@@ -78,17 +78,17 @@ def back_to_apps(device, sub_link=None):
     device_apps = None
     match device:
         case "ios":
-            device_apps = "instructions_ios"
+            device_apps = "setup_ios"
         case "android":
-            device_apps = "instructions_android"
+            device_apps = "setup_android"
         case "windows":
-            device_apps = "instructions_windows"
+            device_apps = "setup_windows"
         case "apple":
-            device_apps = "instructions_apple"
+            device_apps = "setup_apple"
         case "linux":
-            device_apps = "instructions_linux"
+            device_apps = "setup_linux"
         case "androidtv":
-            device_apps = "instructions_androidtv"
+            device_apps = "setup_androidtv"
 
     buttons = []
     if sub_link:
@@ -98,7 +98,7 @@ def back_to_apps(device, sub_link=None):
 
     buttons.append([
         InlineKeyboardButton(text="⬅️ Назад", callback_data=device_apps),
-        InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+        InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
     ])
 
     keyboard = InlineKeyboardMarkup(
