@@ -83,3 +83,53 @@ async def android_app_instructions(callback: CallbackQuery) -> None:
 """
     await callback.message.edit_text(message, reply_markup=back_to_apps(device=device, sub_link=user.subscription_url),
                                      disable_web_page_preview=True)
+
+
+@user_instructions.callback_query(lambda c: c.data.startswith("windows_app_"))
+async def android_app_instructions(callback: CallbackQuery) -> None:
+    """Инструкции для Windows"""
+    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
+        return
+
+    await callback.answer()
+
+    app = callback.data.split('_')[2]
+    device = callback.data.split('_')[0]
+    user = await get_user_by_id(user_id=callback.from_user.id)
+
+    message = ""
+    if app == "hiddify":
+        message = f"""<b>⭐ Квазар | Инструкция для Windows</b>
+
+<b>👨‍🔧 Установка Hiddify</b>
+1. Установи программу <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe">Hiddify</a>
+2. Запусти приложение, выбери регион по инструкции ниже
+3. Открой подписку, раздел Windows - Hiddify и нажми <b>Добавить в приложение</b>
+
+<b>📋 Дополнительно</b>
+Инструкции для приложения, которые не входят в основную настройку
+
+<b>🤔 Подписка</b>
+<blockquote expandable><b>💫 Смена сервера</b>
+1. Подключись к VPN
+2. Слева открой раздел <b>Прокси</b>
+2. В открывшеся окне выбери сервер для подключения
+
+При установке программы стоит режим auto - автоматически подбирается ближайший сервер
+
+<b>🔄 Обновление подписки</b>
+1. Нажми на иконку круга со стрелками сверху
+2. Дождитесь сообщения <b>Профиль успешно обновлен</b></blockquote>
+
+<b>🎌 Регион</b>
+<blockquote expandable><b>👆 Выбор региона</b>
+1. Россия: Российские адреса/сайты - <b>без VPN</b>, остальное - <b>через VPN</b>
+2. Другой: Все адреса/сайты <b>через VPN</b>
+
+<b>💫 Смена региона</b>
+1. Слева открой раздел <b>Параметры конфига</b>
+2. В открывшеся окне найди пункт <b>Регион</b> и нажми на него для изменения</blockquote>
+"""
+        
+    await callback.message.edit_text(message, reply_markup=back_to_apps(device=device, sub_link=user.subscription_url),
+                                     disable_web_page_preview=True)
