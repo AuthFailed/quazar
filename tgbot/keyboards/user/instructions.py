@@ -93,7 +93,7 @@ def back_to_apps(device, sub_link=None):
     buttons = []
     if sub_link:
         buttons.append([
-            InlineKeyboardButton(text="😎 Открыть подписку", web_app=WebAppInfo(url=sub_link))
+            InlineKeyboardButton(text="😎 Открыть подписку", url=sub_link)
         ])
 
     buttons.append([
