@@ -124,7 +124,7 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
 
     await callback.answer()
 
-    await callback.message.edit_text("""<b>⭐ Квазар | Инструкции</b>
+    await callback.message.edit_text("""<b>⭐ Квазар | Выбор устройства</b>
 
 Выбери свое устройство для просмотра инструкции""",
                                      reply_markup=instructions_pickdevice())
