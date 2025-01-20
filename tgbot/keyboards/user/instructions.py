@@ -77,7 +77,7 @@ def back_to_apps(device):
         case "ios":
             device_apps = "instructions_ios"
         case "android":
-            device_apps = "instructions_ios"
+            device_apps = "instructions_android"
         case "windows":
             device_apps = "instructions_windows"
         case "apple":
