@@ -171,5 +171,6 @@ async def android_app_instructions(callback: CallbackQuery) -> None:
 
 Нажми ОК и проверь работу Discord при активном подключении</blockquote>
 """
+    
     await callback.message.edit_text(message, reply_markup=back_to_apps(device=device, sub_link=user.subscription_url),
                                      disable_web_page_preview=True)

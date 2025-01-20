@@ -75,7 +75,7 @@ def admin_vpn_menu_core():
 def to_home():
     buttons = [
         [
-            InlineKeyboardButton(text="🏠 Домой", callback_data="adminmenu"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="adminmenu"),
         ],
     ]
 

@@ -7,8 +7,11 @@ def usermenu_kb_main():
             InlineKeyboardButton(text='😎 Подписка', callback_data="usermenu_sub")
         ],
         [
-            InlineKeyboardButton(text="📜 FAQ", callback_data="usermenu_faq"),
+            InlineKeyboardButton(text="🔌 Подключение", callback_data="usermenu_setup"),
             InlineKeyboardButton(text="📜 Инструкции", callback_data="usermenu_instructions"),
+        ],
+        [
+            InlineKeyboardButton(text="🔎 О проекте", callback_data="usermenu_faq"),
         ],
         [
             InlineKeyboardButton(text="📡 Канал", url="https://t.me/+LUD7ZdTFBrwxMTli"),
@@ -38,7 +41,7 @@ def usermenu_kb_sub(sub_link="https://google.com", sub_status: bool = True):
             InlineKeyboardButton(text='🔥 Сбросить', callback_data="usermenu_revokesub")
         ],
         [
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ]
     ]
 
@@ -76,19 +79,19 @@ def usermenu_kb_revokesub():
     return keyboard
 
 
-def instructions_pickdevice():
+def setup_pickdevice():
     buttons = [
         [
-            InlineKeyboardButton(text="📱 iPhone / iPad", callback_data="instructions_ios"),
-            InlineKeyboardButton(text="🤖 Android", callback_data="instructions_android"),
+            InlineKeyboardButton(text="📱 iPhone / iPad", callback_data="setup_ios"),
+            InlineKeyboardButton(text="🤖 Android", callback_data="setup_android"),
         ],
         [
-            InlineKeyboardButton(text="🖥 Windows", callback_data="instructions_windows"),
-            InlineKeyboardButton(text="💻 Apple (нет)", callback_data="instructions_apple"),
+            InlineKeyboardButton(text="🖥 Windows", callback_data="setup_windows"),
+            InlineKeyboardButton(text="💻 Apple (нет)", callback_data="setup_apple"),
         ],
         [
-            InlineKeyboardButton(text="📱 Linux (нет)", callback_data="instructions_linux"),
-            InlineKeyboardButton(text="📺 AndroidTV (нет)", callback_data="instructions_androidtv"),
+            InlineKeyboardButton(text="📱 Linux (нет)", callback_data="setup_linux"),
+            InlineKeyboardButton(text="📺 AndroidTV (нет)", callback_data="setup_androidtv"),
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu"),
@@ -117,7 +120,7 @@ def channel_link():
 def to_home():
     buttons = [
         [
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ]
     ]
 

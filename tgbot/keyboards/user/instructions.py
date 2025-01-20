@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def ios_apps():
@@ -18,8 +18,8 @@ def ios_apps():
             InlineKeyboardButton(text="SingBox", callback_data="ios_app_singbox"),
         ],
         [
-            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ],
     ]
 
@@ -39,8 +39,8 @@ def android_apps():
             InlineKeyboardButton(text="Happ", callback_data="android_app_happ"),
         ],
         [
-            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ],
     ]
 
@@ -63,8 +63,8 @@ def windows_apps():
             InlineKeyboardButton(text="InvisibleMan", callback_data="windows_app_invisibleman"),
         ],
         [
-            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_instructions"),
-            InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ],
     ]
 
@@ -98,7 +98,7 @@ def back_to_apps(device, sub_link=None):
 
     buttons.append([
         InlineKeyboardButton(text="⬅️ Назад", callback_data=device_apps),
-        InlineKeyboardButton(text="🏠 Домой", callback_data="usermenu"),
+        InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
     ])
 
     keyboard = InlineKeyboardMarkup(
