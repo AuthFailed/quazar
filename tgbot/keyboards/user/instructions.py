@@ -4,18 +4,11 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 def ios_apps():
     buttons = [
         [
-            InlineKeyboardButton(text="🔥 Hiddify", callback_data="ios_app_hiddify"),
+            InlineKeyboardButton(text="🔥 Streizand", callback_data="ios_app_streizand"),
         ],
         [
-            InlineKeyboardButton(text="Streizand", callback_data="ios_app_streizand"),
-            InlineKeyboardButton(text="FoxRay", callback_data="ios_app_foxray"),
-        ],
-        [
+            InlineKeyboardButton(text="Hiddify", callback_data="ios_app_hiddify"),
             InlineKeyboardButton(text="V2Box", callback_data="ios_app_v2box"),
-            InlineKeyboardButton(text="Shadowrocket", callback_data="ios_app_shadowrocket"),
-        ],
-        [
-            InlineKeyboardButton(text="SingBox", callback_data="ios_app_singbox"),
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),

@@ -23,7 +23,15 @@ async def ios_app_instructions(callback: CallbackQuery) -> None:
     user = await get_user_by_id(user_id=callback.from_user.id)
 
     message = ""
-    if app == "hiddify":
+    if app == "streizand":
+        message = f"""<b>⭐ Квазар | Инструкция для iOS</b>
+
+    <b>👨‍🔧 Установка Streizand</b>
+    1. Установи приложение <a href="https://apps.apple.com/ru/app/streisand/id6450534064">Streizand</a>
+    2. Открой подписку, нажми сверху <b>Скопировать подписку</b>
+    3. В приложении нажми на плюсик справа сверху и выбери <b>Добавить из буфера</b>
+    """
+    elif app == "hiddify":
         message = f"""<b>⭐ Квазар | Инструкция для iOS</b>
 
 <b>👨‍🔧 Установка Hiddify</b>
@@ -35,7 +43,14 @@ async def ios_app_instructions(callback: CallbackQuery) -> None:
 1. Регион Россия: Российские адреса/сайты - <b>без VPN</b>, остальное - <b>через VPN</b>
 2. Регион Другой: Все адреса/сайты <b>через VPN</b>
 """
+    elif app == "v2box":
+        message = f"""<b>⭐ Квазар | Инструкция для iOS</b>
 
+<b>👨‍🔧 Установка FoxRay</b>
+1. Установи приложение <a href="https://apps.apple.com/ru/app/streisand/id6450534064">Streizand</a>
+2. Открой подписку, нажми сверху <b>Скопировать подписку</b>
+3. В приложении нажми на плюсик справа сверху и выбери <b>Добавить из буфера</b>
+    """
     await callback.message.edit_text(message, reply_markup=back_to_apps(device=device, sub_link=user.subscription_url),
                                      disable_web_page_preview=True)
 
