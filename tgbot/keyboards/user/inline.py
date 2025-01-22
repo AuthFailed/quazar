@@ -14,7 +14,7 @@ def usermenu_kb_main():
             InlineKeyboardButton(text="🔎 О проекте", callback_data="usermenu_faq"),
         ],
         [
-            InlineKeyboardButton(text="📡 Канал", url="https://t.me/+LUD7ZdTFBrwxMTli"),
+            InlineKeyboardButton(text="📡 Канал", url="https://t.me/+MdKJNt3W6K01YmJi"),
             InlineKeyboardButton(text="🚨 Помощь", url="https://t.me/roman_domru"),
         ],
 
@@ -107,7 +107,7 @@ def setup_pickdevice():
 def channel_link():
     buttons = [
         [
-            InlineKeyboardButton(text="📡 Подписаться", url="https://t.me/+LUD7ZdTFBrwxMTli"),
+            InlineKeyboardButton(text="📡 Подписаться", url="https://t.me/+MdKJNt3W6K01YmJi"),
         ]
     ]
 
