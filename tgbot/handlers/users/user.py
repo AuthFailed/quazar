@@ -78,7 +78,7 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 
     user_status = True if user.status == "active" else False
 
-    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+    ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 🎫 Подписка до: <b>{format_date(user.expire) if user.expire else "♾️"}</b>
 💿 Доступно: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
@@ -232,7 +232,7 @@ async def usermenu_changestatus(callback: CallbackQuery) -> None:
 
     new_user_status = True if new_user.status == "active" else False
 
-    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+    ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 🎫 Подписка до: {format_date(new_user.expire) if new_user.expire else "♾️"}
 💿 Доступно: {format_bytes(new_user.used_traffic)} / {format_bytes(new_user.data_limit)}
@@ -279,7 +279,7 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     user_status = True if user.status == "active" else False
     await revoke_user_sub(user.username)
 
-    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
+    ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 🎫 Подписка до: {format_date(user.expire) if user.expire else "♾️"}
 💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
