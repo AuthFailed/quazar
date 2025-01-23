@@ -80,7 +80,7 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка до: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
+🎫 Подписка: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
 💿 Доступно: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
 
 <b>Доп. инфо</b>
@@ -234,7 +234,7 @@ async def usermenu_changestatus(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка до: <b>{format_date(new_user.expire) + f' ({days_between_unix_timestamp(new_user.expire)})' if new_user.expire else "♾️"}</b>
+🎫 Подписка: <b>{format_date(new_user.expire) + f' ({days_between_unix_timestamp(new_user.expire)})' if new_user.expire else "♾️"}</b>
 💿 Доступно: {format_bytes(new_user.used_traffic)} / {format_bytes(new_user.data_limit)}
 
 <b>Доп. инфо</b>
@@ -281,7 +281,8 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка до: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+🎫 Подписка: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
+💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
 <b>Доп. инфо</b>
 🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
