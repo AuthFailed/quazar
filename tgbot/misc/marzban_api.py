@@ -1,7 +1,9 @@
 import json
+import locale
 import os
 import random
 import string
+from datetime import datetime
 
 from dotenv import load_dotenv
 
@@ -202,3 +204,19 @@ def generate_username(length=6):
     characters = string.ascii_letters + string.digits  # содержит a-z, A-Z, 0-9
 
     return ''.join(random.choice(characters) for _ in range(length))
+
+
+def format_date(timestamp):
+    # Russian month names in genitive case
+    months_ru = [
+        'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+    ]
+
+    # Convert timestamp to datetime
+    date = datetime.fromtimestamp(timestamp)
+
+    # Manually create the Russian-formatted date string
+    russian_date_string = f"{date.day} {months_ru[date.month - 1]} {date.year}"
+
+    return russian_date_string

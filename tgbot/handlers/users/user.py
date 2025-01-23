@@ -10,7 +10,7 @@ from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
     usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, setup_pickdevice
 from tgbot.keyboards.user.instructions import ios_apps, android_apps, windows_apps
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
-    activate_user, deactivate_user
+    activate_user, deactivate_user, format_date
 
 user_router = Router()
 load_dotenv()
@@ -80,12 +80,14 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-🎟️ Статус аккаунта: {"✅ Включен" if user_status else "❌ Выключен"}
-💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+🎫 Подписка до: <b>{format_date(user.expire) if user.expire else "♾️"}</b>
+💿 Доступно: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
 
 <b>Доп. инфо</b>
-Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-Технический ID: <code>{user.username}</code>
+🔐 Аккаунт: <b>{"✅ Включен" if user_status else "❌ Выключен"}</b>
+🚦 Трафик за все время: <b>{format_bytes(user.lifetime_used_traffic)}</b>
+
+⚙️ Технический ID: <code>{user.username}</code>
 """
 
     await callback.message.edit_text(ready_message,
@@ -228,16 +230,18 @@ async def usermenu_changestatus(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-🎟️ Статус аккаунта: {"✅ Включен" if new_user_status else "❌ Выключен"}
-💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+🎫 Подписка до: {format_date(new_user.expire) if new_user.expire else "♾️"}
+💿 Доступно: {format_bytes(new_user.used_traffic)} / {format_bytes(new_user.data_limit)}
 
 <b>Доп. инфо</b>
-Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-Технический ID: <code>{user.username}</code>
+🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
+🚦 Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
+
+⚙️ Технический ID: <code>{user.username}</code>
 """
 
     await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url,
+                                     reply_markup=usermenu_kb_sub(sub_link=new_user.subscription_url,
                                                                   sub_status=new_user_status))
 
 
@@ -271,14 +275,16 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     user_status = True if user.status == "active" else False
     await revoke_user_sub(user.username)
 
-    ready_message = f"""<b>⭐ Квазар | Главное меню</b>
+    ready_message = f"""⭐ <b>Квазар | Главное меню</b>
 
-🎟️ Статус аккаунта: {"✅ Включен" if user_status else "❌ Выключен"}
-💿 Месячный трафик: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+🎫 Подписка до: {format_date(user.expire) if user.expire else "♾️"}
+💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
 <b>Доп. инфо</b>
-Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-Технический ID: <code>{user.username}</code>
-    """
+🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
+🚦 Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
+
+⚙️ Технический ID: <code>{user.username}</code>
+"""
 
     await callback.message.edit_text(ready_message, reply_markup=usermenu_kb_main())
