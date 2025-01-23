@@ -5,6 +5,7 @@ import random
 import string
 from datetime import datetime
 
+import pytz
 from dotenv import load_dotenv
 
 from marzban import MarzbanAPI, UserModify, UserCreate, ProxySettings
@@ -220,3 +221,50 @@ def format_date(timestamp):
     russian_date_string = f"{date.day} {months_ru[date.month - 1]} {date.year}"
 
     return russian_date_string
+
+
+def format_days(days):
+    """
+    Correctly format the number of days in Russian language.
+
+    Args:
+        days (int): Number of days
+
+    Returns:
+        str: Formatted string with correct Russian grammatical form
+    """
+    # Handle absolute value to work with both past and future dates
+    days = abs(int(days))
+
+    # Russian grammatical rules for days
+    if days % 10 == 1 and days % 100 != 11:
+        return f"{days} день"
+    elif 2 <= days % 10 <= 4 and (days % 100 < 10 or days % 100 >= 20):
+        return f"{days} дня"
+    else:
+        return f"{days} дней"
+
+
+def days_between_unix_timestamp(unix_timestamp):
+    """
+    Calculate the number of days between a Unix timestamp and current date in Moscow.
+
+    Args:
+        unix_timestamp (int or float): Unix timestamp in seconds
+
+    Returns:
+        str: Formatted string with number of days
+    """
+    # Create Moscow timezone
+    moscow_tz = pytz.timezone('Europe/Moscow')
+
+    # Convert Unix timestamp to datetime
+    target_date = datetime.fromtimestamp(unix_timestamp, tz=moscow_tz)
+
+    # Get current time in Moscow
+    current_time = datetime.now(moscow_tz)
+
+    # Calculate days difference
+    days_difference = (target_date.date() - current_time.date()).days
+
+    return format_days(days_difference)

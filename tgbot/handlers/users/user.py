@@ -10,7 +10,7 @@ from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
     usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, setup_pickdevice
 from tgbot.keyboards.user.instructions import ios_apps, android_apps, windows_apps
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
-    activate_user, deactivate_user, format_date
+    activate_user, deactivate_user, format_date, days_between_unix_timestamp
 
 user_router = Router()
 load_dotenv()
@@ -80,7 +80,7 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка до: <b>{format_date(user.expire) if user.expire else "♾️"}</b>
+🎫 Подписка до: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
 💿 Доступно: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
 
 <b>Доп. инфо</b>
@@ -234,7 +234,7 @@ async def usermenu_changestatus(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка до: {format_date(new_user.expire) if new_user.expire else "♾️"}
+🎫 Подписка до: <b>{format_date(new_user.expire) + f' ({days_between_unix_timestamp(new_user.expire)})' if new_user.expire else "♾️"}</b>
 💿 Доступно: {format_bytes(new_user.used_traffic)} / {format_bytes(new_user.data_limit)}
 
 <b>Доп. инфо</b>
@@ -281,8 +281,7 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка до: {format_date(user.expire) if user.expire else "♾️"}
-💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+🎫 Подписка до: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
 
 <b>Доп. инфо</b>
 🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
