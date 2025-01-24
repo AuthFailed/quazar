@@ -46,10 +46,11 @@ async def ios_app_instructions(callback: CallbackQuery) -> None:
     elif app == "v2box":
         message = f"""<b>⭐ Квазар | Инструкция для iOS</b>
 
-<b>👨‍🔧 Установка FoxRay</b>
-1. Установи приложение <a href="https://apps.apple.com/ru/app/streisand/id6450534064">Streizand</a>
+<b>👨‍🔧 Установка v2box</b>
+1. Установи приложение <a href="https://apps.apple.com/ru/app/v2box-v2ray-client/id6446814690">v2box</a>
 2. Открой подписку, нажми сверху <b>Скопировать подписку</b>
-3. В приложении нажми на плюсик справа сверху и выбери <b>Добавить из буфера</b>
+3. В приложении открой снизу раздел Configs
+4. Нажми на плюсик справа сверху и выбери <b>import v2ray uri from clipboard</b>
     """
     await callback.message.edit_text(message, reply_markup=back_to_apps(device=device, sub_link=user.subscription_url),
                                      disable_web_page_preview=True)
