@@ -3,8 +3,6 @@ import os
 import random
 import string
 from datetime import datetime
-import mariadb
-import sys
 
 import pytz
 from dotenv import load_dotenv
@@ -145,54 +143,6 @@ async def restart_core():
     await api.restart_core(token=token.access_token)
     await api.close()
 
-
-# Действия с БД
-async def get_reset_date(username):
-    try:
-        conn = mariadb.connect(
-            user=os.environ.get('MARIA_USER'),
-            password=os.environ.get('MARIA_PASSWORD'),
-            host=os.environ.get('MARIA_HOST'),
-            port=int(os.environ.get('MARIA_PORT')),
-            database=os.environ.get('MARIA_DATABASE')
-        )
-
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT created_at, username FROM users WHERE username = ?", (username,)
-            )
-            reset_date = cur.fetchone()
-            if reset_date[0]:
-                return reset_date[0].day
-
-    except mariadb.Error as e:
-        print(f"Error connecting to MariaDB Platform: {e}")
-        return None
-    finally:
-        conn.close()
-
-
-async def get_nodes_data():
-    try:
-        conn = mariadb.connect(
-            user=os.environ.get('MARIA_USER'),
-            password=os.environ.get('MARIA_PASSWORD'),
-            host=os.environ.get('MARIA_HOST'),
-            port=int(os.environ.get('MARIA_PORT')),
-            database=os.environ.get('MARIA_DATABASE')
-        )
-
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT name, address, port, api_port, status, last_status_change, xray_version, usage_coefficient FROM nodes")
-            node_data = cur.fetchall()
-            return node_data
-
-    except mariadb.Error as e:
-        print(f"Error connecting to MariaDB Platform: {e}")
-        return []
-    finally:
-        conn.close()
 
 # Функции-хелперы
 def format_bytes(bytes_value):

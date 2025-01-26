@@ -9,8 +9,9 @@ import os
 from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
     usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, setup_pickdevice
 from tgbot.keyboards.user.instructions import ios_apps, android_apps, windows_apps
+from tgbot.misc.db import get_reset_date
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
-    activate_user, deactivate_user, format_date, days_between_unix_timestamp, get_reset_date
+    activate_user, deactivate_user, format_date, days_between_unix_timestamp
 
 user_router = Router()
 load_dotenv()
