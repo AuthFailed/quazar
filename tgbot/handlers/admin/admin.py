@@ -57,6 +57,7 @@ async def adminmenu_nodes(callback: CallbackQuery) -> None:
     await callback.answer("Загружаю данные локаций...")
 
     node_data = await get_nodes_data()
+    print(node_data)
     message = "<b>⭐ Квазар | Ноды</b>\n\n"
     for node in node_data:
         if "de" in node[0]:

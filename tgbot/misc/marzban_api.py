@@ -184,7 +184,7 @@ async def get_nodes_data():
 
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT name, address, port, status, last_status_change, xray_version, usage_coefficient FROM nodes")
+                "SELECT name, address, port, api_port, status, last_status_change, xray_version, usage_coefficient FROM nodes")
             node_data = cur.fetchall()
             return node_data
 
