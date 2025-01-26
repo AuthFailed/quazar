@@ -24,7 +24,8 @@ async def is_user_in_channel(user_id: int, bot):
         if sub.status != "left":
             return True
         else:
-            await bot.send_message(chat_id=user_id, text="""<b>Привет 👋</b>\n\n
+            await bot.send_message(chat_id=user_id, text="""<b>Привет 👋</b>
+
 Для доступа требуется подписка на <b>⭐ Квазар</b>
 
 <b>😊 Если подписка уже есть</b>
