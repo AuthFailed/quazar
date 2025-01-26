@@ -71,9 +71,9 @@ async def adminmenu_nodes(callback: CallbackQuery) -> None:
             message += f"🇷🇺 <b>{node[0]}</b>\n"
         message += (f"🌐 IP: <code>{node[1]}</code>\n"
                     f"🔌 Порт: <code>{node[2]}</code> / <code>{node[3]}</code>\n"
-                    f"⏳ Статус: {'✅' if node[4] == "connected" else '❌'}\n"
+                    f"⏳ Статус: {'✅' if node[4] == 'connected' else '❌'}\n"
                     f"🔄 Изменение: <code>{node[5]}</code>\n"
-                    f"🏷️ Xray: {'<code>' + node[6] + '</code>' if node[6] is not None else "❌ "}\n"
+                    f"🏷️ Xray: {'<code>' + node[6] + '</code>' if node[6] is not None else '❌'}\n"
                     f"📊 Коэф: <code>{node[7]}</code>\n\n")
     await callback.message.edit_text(message, reply_markup=to_home())
 
