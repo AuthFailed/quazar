@@ -10,7 +10,7 @@ from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
     usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, setup_pickdevice
 from tgbot.keyboards.user.instructions import ios_apps, android_apps, windows_apps
 from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
-    activate_user, deactivate_user, format_date, days_between_unix_timestamp
+    activate_user, deactivate_user, format_date, days_between_unix_timestamp, get_reset_date
 
 user_router = Router()
 load_dotenv()
@@ -77,11 +77,13 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
         user = await get_user_by_id(user_id=callback.from_user.id)
 
     user_status = True if user.status == "active" else False
+    reset_date = await get_reset_date(user.username)
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 🎫 Подписка: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
 💿 Доступно: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
+♻️ Сброс трафика: <b>каждое {reset_date} число месяца</b>
 
 <b>Доп. инфо</b>
 🔐 Аккаунт: <b>{"✅ Включен" if user_status else "❌ Выключен"}</b>
@@ -106,9 +108,11 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
     ready_message = """<b>⭐ Квазар | О проекте</b>
 
 <b>🌐 Доступные сервера</b>
-🇩🇪 Германия, Франкфурт - <code>de.q-access.store</code>
-🇷🇺 Россия, Москва - <code>ru.q-access.store</code>
-🇸🇪 Швеция, Стокгольм - <code>sw.q-access.store</code>
+🇩🇪 Германия, Франкфурт - <code>de0.q-access.ru</code>
+🇩🇪 Германия, Франкфурт - <code>de1.q-access.ru/code>
+🇫🇮 Финляндия, Хельсинки - <code>fn0.q-access.ru/code>
+🇷🇺 Россия, Москва - <code>ru0.q-access.ru</code>
+🇸🇪 Швеция, Стокгольм - <code>sw0.q-access.ru</code>
 
 <b>🦾 Технология</b>
 <blockquote expandable>VPN используется протокол VLESS поверх TCP с технологией REALITY - это современное решение для обхода блокировок, которое отлично маскирует трафик под обычные HTTPS-соединения
@@ -231,11 +235,13 @@ async def usermenu_changestatus(callback: CallbackQuery) -> None:
         new_user = await activate_user(callback.from_user.id)
 
     new_user_status = True if new_user.status == "active" else False
+    reset_date = await get_reset_date(new_user.username)
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 🎫 Подписка: <b>{format_date(new_user.expire) + f' ({days_between_unix_timestamp(new_user.expire)})' if new_user.expire else "♾️"}</b>
 💿 Доступно: {format_bytes(new_user.used_traffic)} / {format_bytes(new_user.data_limit)}
+♻️ Сброс трафика: <b>каждое {reset_date} число месяца</b>
 
 <b>Доп. инфо</b>
 🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
@@ -279,10 +285,13 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     user_status = True if user.status == "active" else False
     await revoke_user_sub(user.username)
 
+    reset_date = await get_reset_date(user.username)
+
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 🎫 Подписка: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
 💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
+♻️ Сброс трафика: <b>каждое {reset_date} число месяца</b>
 
 <b>Доп. инфо</b>
 🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
