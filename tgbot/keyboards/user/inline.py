@@ -8,7 +8,7 @@ def usermenu_kb_main():
         ],
         [
             InlineKeyboardButton(text="🔌 Подключение", callback_data="usermenu_setup"),
-            InlineKeyboardButton(text="📜 Инструкции", callback_data="usermenu_instructions"),
+            #InlineKeyboardButton(text="📜 Инструкции", callback_data="usermenu_instructions"),
         ],
         [
             InlineKeyboardButton(text="🔎 О проекте", callback_data="usermenu_faq"),
