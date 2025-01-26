@@ -32,7 +32,7 @@ async def adminmenu_serverstatus(callback: CallbackQuery) -> None:
     await callback.answer("Проверяю статус сервера...")
     server_stats = await get_system_stats()
 
-    await callback.message.edit_text("⭐ <b>⭐ Квазар | Статус панели</b>\n\n"
+    await callback.message.edit_text("<b>⭐ Квазар | Статус панели</b>\n\n"
                                      "<b>Сервер</b>\n"
                                      f"⚡ Память: {server_stats['mem_used']} | {server_stats['mem_total']}\n"
                                      f"🧠 Процессор: {server_stats['cpu_cores']} ядер, нагрузка {server_stats['cpu_usage']}\n\n"
