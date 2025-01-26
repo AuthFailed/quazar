@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 RUN apt-get update \
-    && apt-get -y install libmariadb-dev gcc \
+    && apt-get -y install libmariadb-dev gcc
 
 WORKDIR /usr/src/app/bot
 
