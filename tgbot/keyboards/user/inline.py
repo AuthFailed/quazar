@@ -107,7 +107,7 @@ def setup_pickdevice():
 def channel_link():
     buttons = [
         [
-            InlineKeyboardButton(text="📡 Подписаться", url="https://t.me/+MdKJNt3W6K01YmJi"),
+            InlineKeyboardButton(text="📡 Подписаться", url="https://t.me/tribute/app?startapp=snKl"),
         ]
     ]
 
