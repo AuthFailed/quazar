@@ -40,10 +40,9 @@ async def is_user_in_channel(user_id: int, bot):
 2. Выбери способ оплаты и оплати подписку
 3. После оплаты перейди в бота @tribute и подпишись на канал
 4. Вернись сюда и нажми /start""", disable_web_page_preview=True)
+            return False
     except Exception as e:
         print(f"Произошла ошибка: {e}")
-
-    return False
 
 
 @user_router.message(CommandStart())
