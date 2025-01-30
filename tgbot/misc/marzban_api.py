@@ -20,7 +20,7 @@ async def create_user(user_id):
                                 password=os.environ.get('MARZBAN_PASSWORD'))
 
     new_user = UserCreate(username=generate_username(), proxies={"vless": ProxySettings(flow="xtls-rprx-vision")},
-                          inbounds={'vless': ['VLESS TCP REALITY', 'RU-DE VLESS TCP REALITY', 'RU-FN VLESS TCP REALITY', 'RU-SW VLESS TCP REALITY']}, status="active", data_limit=107374182400,
+                          inbounds={'vless': ['VLESS TCP REALITY', 'RU-DE VLESS TCP REALITY', 'RU-FN VLESS TCP REALITY', 'RU-SW VLESS TCP REALITY']}, status="on_hold", data_limit=107374182400,
                           note=str(user_id), data_limit_reset_strategy="month")
     new_user = await api.add_user(user=new_user, token=token.access_token)
     return new_user
