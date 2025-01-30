@@ -8,7 +8,7 @@ def usermenu_kb_main():
         ],
         [
             InlineKeyboardButton(text="🔌 Подключение", callback_data="usermenu_setup"),
-            #InlineKeyboardButton(text="📜 Инструкции", callback_data="usermenu_instructions"),
+            # InlineKeyboardButton(text="📜 Инструкции", callback_data="usermenu_instructions"),
         ],
         [
             InlineKeyboardButton(text="🔎 О проекте", callback_data="usermenu_faq"),
@@ -30,8 +30,14 @@ def usermenu_kb_main():
 def usermenu_kb_sub(user_status: str, sub_link: str = "https://google.com"):
     buttons = []
     if user_status == "active":
-        buttons.append([
-            InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
+        buttons.extend([
+            [
+                InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
+            ],
+            [
+                InlineKeyboardButton(text='⬆️ Лимит', url="https://t.me/tribute/app?startapp=djXK"),
+                InlineKeyboardButton(text='💳 Оплата', url="https://t.me/tribute/app?startapp=snKl")
+            ]
         ])
     elif user_status == "disabled" or user_status == "on_hold":
         buttons.append([
