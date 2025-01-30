@@ -97,7 +97,7 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
 💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
 ♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>"""
         case "disabled":
-            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b> ({format_date(user.expire)})"""
+            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b>"""
         case "limited":
             sub_status = f"""🎫 Подписка: <b>❌ Лимит</b> ({format_date(user.expire)})
 💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
