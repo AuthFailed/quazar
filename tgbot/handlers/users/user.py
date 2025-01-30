@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import Router, F
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from dotenv import load_dotenv
@@ -87,25 +88,39 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
     else:
         user = await get_user_by_id(user_id=callback.from_user.id)
 
-    user_status = True if user.status == "active" else False
     reset_date = await get_reset_date(user.username)
+
+    sub_status = ""
+    match user.status:
+        case "active":
+            sub_status = f"""🎫 Подписка: {format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}
+💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
+♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>
+        """
+        case "disabled":
+            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b> ({format_date(user.expire)})"""
+        case "limited":
+            sub_status = f"""🎫 Подписка: <b>❌ Лимит</b> ({format_date(user.expire)})
+💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
+♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>"""
+        case "expired":
+            sub_status = f"""🎫 Подписка: <b>❌ Истекла {format_date(user.expire)}</b>"""
+        case "on_hold":
+            sub_status = f"""🎫 Подписка: <b>⏳ На проверке</b> ({format_date(user.expire)})"""
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
-💿 Доступно: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
-♻️ Сброс трафика: <b>каждое {reset_date} число месяца</b>
+{sub_status}
 
 <b>Доп. инфо</b>
-🔐 Аккаунт: <b>{"✅ Включен" if user_status else "❌ Выключен"}</b>
 🚦 Трафик за все время: <b>{format_bytes(user.lifetime_used_traffic)}</b>
-
 ⚙️ Технический ID: <code>{user.username}</code>
 """
-
-    await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url,
-                                                                  sub_status=user_status))
+    try:
+        await callback.message.edit_text(ready_message,
+                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, user_status=user.status))
+    except TelegramBadRequest as e:
+        pass
 
 
 @user_router.callback_query(F.data == "usermenu_faq")
@@ -193,79 +208,6 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
         await callback.message.edit_text(message,
                                          reply_markup=windows_apps())
 
-
-@user_router.callback_query(F.data == "usermenu_changestatus")
-async def usermenu_revokesub(callback: CallbackQuery) -> None:
-    """Меню изменения статуса аккаунта"""
-    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
-        return
-
-    await callback.answer()
-
-    user = await get_user_by_id(user_id=callback.from_user.id)
-
-    activate_message = f"""<b>⭐ Квазар | Включение аккаунта</b>
-
-⚠️ <b>Внимание</b>
-Это действие <b>активирует аккаунт</b>
-Все подключения - <b>восстановятся, сеть заработает</b>
-
-Выключить аккаунт повторно можно в том же меню"""
-
-    deactivate_message = f"""<b>⭐ Квазар | Отключение аккаунта</b>
-    
-⚠️ <b>Внимание</b>
-Это действие <b>деактивирует аккаунт</b>
-Все подключения - <b>перестанут работать</b>, в том числе текущие активные
-    
-Включить аккаунт обратно можно в том же меню
-    
-<i>Рекомендуется выполнять это действие если к твоим подключениям кто-то получил доступ</i>"""
-
-    if user.status == "active":
-        await callback.message.edit_text(deactivate_message,
-                                         reply_markup=usermenu_kb_changestatus())
-    else:
-        await callback.message.edit_text(activate_message,
-                                         reply_markup=usermenu_kb_changestatus())
-
-
-@user_router.callback_query(F.data == "usermenu_changestatus_agree")
-async def usermenu_changestatus(callback: CallbackQuery) -> None:
-    """Изменение статуса аккаунта"""
-    await callback.answer("Меняю статус аккаунта...")
-
-    if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
-        return
-    user = await get_user_by_id(user_id=callback.from_user.id)
-    user_status = True if user.status == "active" else False
-
-    if user_status:
-        new_user = await deactivate_user(callback.from_user.id)
-    else:
-        new_user = await activate_user(callback.from_user.id)
-
-    new_user_status = True if new_user.status == "active" else False
-    reset_date = await get_reset_date(new_user.username)
-
-    ready_message = f"""⭐ <b>Квазар | Подписка</b>
-
-🎫 Подписка: <b>{format_date(new_user.expire) + f' ({days_between_unix_timestamp(new_user.expire)})' if new_user.expire else "♾️"}</b>
-💿 Доступно: {format_bytes(new_user.used_traffic)} / {format_bytes(new_user.data_limit)}
-♻️ Сброс трафика: <b>каждое {reset_date} число месяца</b>
-
-<b>Доп. инфо</b>
-🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
-🚦 Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-
-⚙️ Технический ID: <code>{user.username}</code>
-"""
-
-    await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=new_user.subscription_url,
-                                                                  sub_status=new_user_status))
-
-
 @user_router.callback_query(F.data == "usermenu_revokesub")
 async def usermenu_revokesub(callback: CallbackQuery) -> None:
     """Меню обнуления подписки"""
@@ -293,22 +235,37 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
 
     await callback.answer("Обнуляю подписку...")
     user = await get_user_by_id(user_id=callback.from_user.id)
-    user_status = True if user.status == "active" else False
     await revoke_user_sub(user.username)
 
     reset_date = await get_reset_date(user.username)
 
+    sub_status = ""
+    match user.status:
+        case "active":
+            sub_status = f"""🎫 Подписка: {format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}
+💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
+♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>
+"""
+        case "disabled":
+            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b>"""
+        case "limited":
+            sub_status = f"""🎫 Подписка: <b>❌ Лимит</b>
+♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>"""
+        case "expired":
+            sub_status = f"""🎫 Подписка: <b>❌ Истекла</b>"""
+        case "on_hold":
+            sub_status = f"""🎫 Подписка: <b>⏳ На проверке</b>"""
+
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
-🎫 Подписка: <b>{format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}</b>
-💿 Доступно: {format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}
-♻️ Сброс трафика: <b>каждое {reset_date} число месяца</b>
+{sub_status}
 
 <b>Доп. инфо</b>
-🔐 Аккаунт: {"✅ Включен" if user_status else "❌ Выключен"}
-🚦 Трафик за все время: {format_bytes(user.lifetime_used_traffic)}
-
+🚦 Трафик за все время: <b>{format_bytes(user.lifetime_used_traffic)}</b>
 ⚙️ Технический ID: <code>{user.username}</code>
-"""
+    """
 
-    await callback.message.edit_text(ready_message, reply_markup=usermenu_kb_main())
+    try:
+        await callback.message.edit_text(ready_message, reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, user_status=user.status))
+    except TelegramBadRequest as e:
+        pass

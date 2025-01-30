@@ -16,7 +16,7 @@ def usermenu_kb_main():
         ],
         [
             InlineKeyboardButton(text="📡 Канал", url="https://t.me/+MdKJNt3W6K01YmJi"),
-            InlineKeyboardButton(text="🚨 Помощь", url="https://t.me/roman_domru"),
+            InlineKeyboardButton(text="🚨 Поддержка", url="https://t.me/quazar_supp"),
         ],
 
     ]
@@ -27,24 +27,34 @@ def usermenu_kb_main():
     return keyboard
 
 
-def usermenu_kb_sub(sub_link="https://google.com", sub_status: bool = True):
-    buttons = [
-        [
+def usermenu_kb_sub(user_status: str, sub_link: str = "https://google.com"):
+    buttons = []
+    if user_status == "active":
+        buttons.append([
             InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
-        ],
+        ])
+    elif user_status == "disabled" or user_status == "on_hold":
+        buttons.append([
+            InlineKeyboardButton(text='🚨 Поддержка', url="https://t.me/quazar_supp")
+        ])
+    elif user_status == "limited":
+        buttons.append([
+            InlineKeyboardButton(text='⬆️ Увеличить лимит', url="https://t.me/tribute/app?startapp=djXK")
+        ])
+    elif user_status == "expired":
+        buttons.append([
+            InlineKeyboardButton(text='💳 Оплатить', url="https://t.me/tribute/app?startapp=snKl")
+        ])
+
+    buttons.extend([
         [
-            InlineKeyboardButton(text='🔄 Обновить данные', callback_data="usermenu_sub")
-        ],
-        [
-            InlineKeyboardButton(text="🔽 Выключить",
-                                 callback_data="usermenu_changestatus") if sub_status else InlineKeyboardButton(
-                text="🔼 Включить", callback_data="usermenu_changestatus"),
+            InlineKeyboardButton(text='🔄 Обновить', callback_data="usermenu_sub"),
             InlineKeyboardButton(text='🔥 Сбросить', callback_data="usermenu_revokesub")
         ],
         [
             InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
         ]
-    ]
+    ])
 
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=buttons,
