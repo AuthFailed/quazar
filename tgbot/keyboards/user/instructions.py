@@ -25,7 +25,7 @@ def ios_apps():
 def android_apps():
     buttons = [
         [
-            InlineKeyboardButton(text="🔥Happ", callback_data="android_app_happ"),
+            InlineKeyboardButton(text="🔥 Happ", callback_data="android_app_happ"),
         ],
         [
             InlineKeyboardButton(text="V2RayNG", callback_data="android_app_v2rayng"),
