@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from tgbot.handlers.users.user import is_user_in_channel
 from tgbot.keyboards.user.instructions import back_to_apps
-from tgbot.misc.marzban_api import get_user_by_id
+from tgbot.misc.marzban_api import get_user_by_id, is_user_created, create_user
 
 user_instructions = Router()
 load_dotenv()
@@ -13,14 +13,18 @@ load_dotenv()
 @user_instructions.callback_query(lambda c: c.data.startswith("ios_app_"))
 async def ios_app_instructions(callback: CallbackQuery) -> None:
     """Инструкции для iOS"""
+    await callback.answer()
+
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         return
 
-    await callback.answer()
+    if not await is_user_created(callback.from_user.id):
+        user = await create_user(callback.from_user.id)
+    else:
+        user = await get_user_by_id(user_id=callback.from_user.id)
 
     app = callback.data.split('_')[2]
     device = callback.data.split('_')[0]
-    user = await get_user_by_id(user_id=callback.from_user.id)
 
     message = ""
     if app == "streizand":
@@ -59,14 +63,18 @@ async def ios_app_instructions(callback: CallbackQuery) -> None:
 @user_instructions.callback_query(lambda c: c.data.startswith("android_app_"))
 async def android_app_instructions(callback: CallbackQuery) -> None:
     """Инструкции для Android"""
+    await callback.answer()
+
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         return
 
-    await callback.answer()
+    if not await is_user_created(callback.from_user.id):
+        user = await create_user(callback.from_user.id)
+    else:
+        user = await get_user_by_id(user_id=callback.from_user.id)
 
     app = callback.data.split('_')[2]
     device = callback.data.split('_')[0]
-    user = await get_user_by_id(user_id=callback.from_user.id)
 
     message = ""
     if app == "hiddify":
@@ -104,14 +112,18 @@ async def android_app_instructions(callback: CallbackQuery) -> None:
 @user_instructions.callback_query(lambda c: c.data.startswith("windows_app_"))
 async def android_app_instructions(callback: CallbackQuery) -> None:
     """Инструкции для Windows"""
+    await callback.answer()
+
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         return
 
-    await callback.answer()
+    if not await is_user_created(callback.from_user.id):
+        user = await create_user(callback.from_user.id)
+    else:
+        user = await get_user_by_id(user_id=callback.from_user.id)
 
     app = callback.data.split('_')[2]
     device = callback.data.split('_')[0]
-    user = await get_user_by_id(user_id=callback.from_user.id)
 
     message = ""
     if app == "hiddify":
