@@ -133,7 +133,7 @@ async def usermenu_faq(callback: CallbackQuery) -> None:
     ready_message = """<b>⭐ Квазар | О проекте</b>
 
 <b>🌐 Локации</b>
-🇩🇪 Германия, Франкфурт - <code>.q-access.ru</code>
+🇩🇪 Германия, Франкфурт - <code>de.q-access.ru</code>
 🇫🇮 Финляндия, Хельсинки - <code>fn.q-access.ru</code>
 🇸🇪 Швеция, Стокгольм - <code>sw.q-access.ru</code>
 
