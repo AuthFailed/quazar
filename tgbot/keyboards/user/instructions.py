@@ -25,11 +25,11 @@ def ios_apps():
 def android_apps():
     buttons = [
         [
-            InlineKeyboardButton(text="🔥 Hiddify", callback_data="android_app_hiddify"),
+            InlineKeyboardButton(text="🔥Happ", callback_data="android_app_happ"),
         ],
         [
             InlineKeyboardButton(text="V2RayNG", callback_data="android_app_v2rayng"),
-            InlineKeyboardButton(text="Happ", callback_data="android_app_happ"),
+            InlineKeyboardButton(text="Hiddify", callback_data="android_app_hiddify")
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
@@ -46,11 +46,11 @@ def android_apps():
 def windows_apps():
     buttons = [
         [
-            InlineKeyboardButton(text="🔥 Hiddify", callback_data="windows_app_hiddify"),
+            InlineKeyboardButton(text="🔥 NekoRay", callback_data="windows_app_nekoray"),
         ],
         [
-            InlineKeyboardButton(text="NekoRay", callback_data="windows_app_nekoray"),
             InlineKeyboardButton(text="v2rayN", callback_data="windows_app_v2rayn"),
+            InlineKeyboardButton(text="Hiddify", callback_data="windows_app_hiddify"),
         ],
         [
             InlineKeyboardButton(text="InvisibleMan", callback_data="windows_app_invisibleman"),
