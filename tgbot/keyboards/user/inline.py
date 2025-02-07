@@ -12,7 +12,6 @@ def usermenu_kb_main():
         ],
         [
             InlineKeyboardButton(text="🔎 О проекте", callback_data="usermenu_faq"),
-            InlineKeyboardButton(text="🌀 Статус", web_app=WebAppInfo(url="https://status.q-access.ru/status/quazar")),
         ],
         [
             InlineKeyboardButton(text="📡 Канал", url="https://t.me/+MdKJNt3W6K01YmJi"),
