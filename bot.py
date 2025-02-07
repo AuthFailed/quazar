@@ -7,15 +7,27 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiohttp import web
 
 from tgbot.config import load_config, Config
 from tgbot.handlers import routers_list
 from tgbot.middlewares.config import ConfigMiddleware
 from tgbot.services import broadcaster
 
+WEBHOOK_URL = "https://127.0.0.1/webhook"
+WEBHOOK_PATH = "/webhook"
+PORT = 7070
+
 
 async def on_startup(bot: Bot, admin_ids: list[int]):
+    await bot.set_webhook(WEBHOOK_URL)
     await broadcaster.broadcast(bot, admin_ids, "Бот запущен")
+
+
+async def on_shutdown(bot: Bot, admin_ids: list[int]):
+    await bot.delete_webhook()
+    await broadcaster.broadcast(bot, admin_ids, "Бот остановлен")
 
 
 def register_global_middlewares(dp: Dispatcher, config: Config, session_pool=None):
@@ -74,7 +86,6 @@ def get_storage(config):
 
     Returns:
         Storage: The storage object based on the configuration.
-
     """
     if config.tg_bot.use_redis:
         return RedisStorage.from_url(
@@ -95,15 +106,34 @@ async def main():
     dp = Dispatcher(storage=storage)
 
     dp.include_routers(*routers_list)
-
     register_global_middlewares(dp, config)
 
-    await on_startup(bot, config.tg_bot.admin_ids)
-    await dp.start_polling(bot)
+    # Create aiohttp application
+    app = web.Application()
+
+    # Create request handler
+    webhook_handler = SimpleRequestHandler(
+        dispatcher=dp,
+        bot=bot
+    )
+
+    # Register webhook handler
+    webhook_handler.register(app, path=WEBHOOK_PATH)
+
+    # Setup application
+    setup_application(app, dp, bot=bot)
+
+    # Setup startup and shutdown handlers
+    app.on_startup.append(lambda app: on_startup(bot, config.tg_bot.admin_ids))
+    app.on_shutdown.append(lambda app: on_shutdown(bot, config.tg_bot.admin_ids))
+
+    # Start web server
+    return app
 
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        app = asyncio.run(main())
+        web.run_app(app, host="127.0.0.1", port=PORT)
     except (KeyboardInterrupt, SystemExit):
-        logging.error("Бот запущен!")
+        logging.error("Бот остановлен!")
