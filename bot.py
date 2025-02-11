@@ -21,9 +21,9 @@ WEBHOOK_PATH = "/webhook"
 PORT = 7070
 
 
-async def start_webhook_server(host: str, port: int):
+async def start_webhook_server(host: str, port: int, bot: Bot):
     app = web.Application()
-    app.router.add_post('/webhook/marzban', handle_marzban_webhook)
+    app.router.add_post('/webhook/marzban', handle_marzban_webhook(bot=bot))
     
     runner = web.AppRunner(app)
     await runner.setup()
@@ -87,7 +87,8 @@ async def main():
     # Start webhook server
     await start_webhook_server(
         host="0.0.0.0",
-        port="44123"
+        port=44123,
+        bot=bot
     )
     
     # Notify admins

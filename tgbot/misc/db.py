@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def get_user(userid: int = "Telegram userid") -> dict:
+async def get_user(tg_id: int = None, username: str = None) -> dict:
     user_data = {
         "id": None,
+        "tg_id": None,
         "username": None,
         "status": None,
         "used_traffic": None,
@@ -37,13 +38,15 @@ async def get_user(userid: int = "Telegram userid") -> dict:
 
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT id, username, status, used_traffic, data_limit, expire, created_at, data_limit_reset_strategy, note, sub_updated_at, sub_last_user_agent, online_at, edit_at, on_hold_timeout, on_hold_expire_duration, auto_delete_in_days, last_status_change FROM users WHERE tgid = ?",
-                (userid,))
-            node_data = cur.fetchone()
+                "SELECT id, tg_id, username, status, used_traffic, data_limit, expire, created_at, data_limit_reset_strategy, note, sub_updated_at, sub_last_user_agent, online_at, edit_at, on_hold_timeout, on_hold_expire_duration, auto_delete_in_days, last_status_change FROM users WHERE tgid = ?",
+                (tg_id,)) if tg_id else cur.execute(
+                "SELECT id, tg_id, username, status, used_traffic, data_limit, expire, created_at, data_limit_reset_strategy, note, sub_updated_at, sub_last_user_agent, online_at, edit_at, on_hold_timeout, on_hold_expire_duration, auto_delete_in_days, last_status_change FROM users WHERE username = ?",
+                (username,))
+            user_data = cur.fetchone()
 
-            if node_data:
+            if user_data:
                 for i, key in enumerate(user_data.keys()):
-                    user_data[key] = node_data[i]
+                    user_data[key] = user_data[i]
 
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
