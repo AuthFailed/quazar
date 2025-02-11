@@ -7,12 +7,18 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiohttp import web
 
 from tgbot.config import load_config, Config
 from tgbot.handlers import routers_list
 from tgbot.middlewares.config import ConfigMiddleware
 from tgbot.misc.webhook import handle_marzban_webhook
 from tgbot.services import broadcaster
+
+WEBHOOK_URL = "https://127.0.0.1/webhook"
+WEBHOOK_PATH = "/webhook"
+PORT = 7070
 
 
 async def start_webhook_server(host: str, port: int):
@@ -28,6 +34,11 @@ async def start_webhook_server(host: str, port: int):
 
 async def on_startup(bot: Bot, admin_ids: list[int]):
     await broadcaster.broadcast(bot, admin_ids, "Bot started")
+
+async def on_shutdown(bot: Bot, admin_ids: list[int]):
+    await bot.delete_webhook()
+    await broadcaster.broadcast(bot, admin_ids, "Бот остановлен")
+
 
 def register_global_middlewares(dp: Dispatcher, config: Config, session_pool=None):
     middleware_types = [
@@ -87,6 +98,7 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        app = asyncio.run(main())
+        web.run_app(app, host="127.0.0.1", port=PORT)
     except (KeyboardInterrupt, SystemExit):
         logging.error("Bot stopped!")
