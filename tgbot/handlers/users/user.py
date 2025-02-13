@@ -88,30 +88,32 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
     sub_status = ""
     match user["status"]:
         case "ACTIVE":
-            sub_status = f"""🎫 Подписка: {f"<b>до {format_date(user["expireAt"])}</b>" if user["expireAt"] else "♾️"}
-💿 Лимит: <b>{format_bytes(user["usedTrafficBytes"])} / {format_bytes(user["trafficLimitBytes"])}</b>"""
-        case "DISABLED":
-            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b>"""
+            sub_status = f"""<b>🎫 Подписка</b>: {f"до {format_date(user["expireAt"])}" if user["expireAt"] else "♾️"}
+<b>📊 Использовано</b>: {format_bytes(user["usedTrafficBytes"])} из {format_bytes(user["trafficLimitBytes"])}"""
         case "LIMITED":
-            sub_status = f"""🎫 Подписка: <b>❌ Лимит</b> ({user["expire"]})
-💿 Лимит: <b>{format_bytes(user["used_traffic"])} / {user["data_limit"]}</b>"""
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Лимит ({user["expire"]})
+<b>📊 Использовано</b>: {format_bytes(user["used_traffic"])} из {format_bytes(user["trafficLimitBytes"])}"""
+        case "DISABLED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Отключена"""
+        
         case "EXPIRED":
-            sub_status = f"""🎫 Подписка: <b>❌ Истекла {user["expire"]}</b>"""
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Истекла {user["expire"]}"""
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 {sub_status}
-♻️ Сброс лимита: <b>каждое 1 число месяца</b>
+<b>♻️ Сброс лимита</b>: каждое 1 число месяца
 
+<b>🔗 Ссылка-подписка для клиента</b>:
 <code>{user["subscriptionUrl"]}</code>
 
 <b>Доп. инфо</b>
-🚦 Трафик за все время: <b>{format_bytes(user["lifetimeUsedTrafficBytes"])}</b>
-⚙️ Технический ID: <code>{user["username"]}</code>
+<b>🚦 Трафик за все время</b>: {format_bytes(user["lifetimeUsedTrafficBytes"])}
+<b>⚙️ Технический ID</b>: <code>{user["username"]}</code>
 """
     try:
         await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=user["subscriptionUrl"], user_status=user["status"]))
+                                     reply_markup=usermenu_kb_sub(user_status=user["status"]))
     except TelegramBadRequest as e:
         pass
 
@@ -238,29 +240,31 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     sub_status = ""
     match user["status"]:
         case "ACTIVE":
-            sub_status = f"""🎫 Подписка: {f"<b>до {format_date(user["expireAt"])}</b>" if user["expireAt"] else "♾️"}
-💿 Лимит: <b>{format_bytes(user["usedTrafficBytes"])} / {format_bytes(user["trafficLimitBytes"])}</b>"""
-        case "DISABLED":
-            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b>"""
+            sub_status = f"""<b>🎫 Подписка</b>: {f"до {format_date(user["expireAt"])}" if user["expireAt"] else "♾️"}
+<b>📊 Использовано</b>: {format_bytes(user["usedTrafficBytes"])} из {format_bytes(user["trafficLimitBytes"])}"""
         case "LIMITED":
-            sub_status = f"""🎫 Подписка: <b>❌ Лимит</b> ({user["expire"]})
-💿 Лимит: <b>{format_bytes(user["used_traffic"])} / {user["data_limit"]}</b>"""
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Лимит ({user["expire"]})
+<b>📊 Использовано</b>: {format_bytes(user["used_traffic"])} из {format_bytes(user["trafficLimitBytes"])}"""
+        case "DISABLED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Отключена"""
+        
         case "EXPIRED":
-            sub_status = f"""🎫 Подписка: <b>❌ Истекла {user["expire"]}</b>"""
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Истекла {user["expire"]}"""
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 {sub_status}
-♻️ Сброс лимита: <b>каждое 1 число месяца</b>
+<b>♻️ Сброс лимита</b>: каждое 1 число месяца
 
+<b>🔗 Ссылка-подписка для клиента</b>:
 <code>{user["subscriptionUrl"]}</code>
 
 <b>Доп. инфо</b>
-🚦 Трафик за все время: <b>{format_bytes(user["lifetimeUsedTrafficBytes"])}</b>
-⚙️ Технический ID: <code>{user["username"]}</code>
+<b>🚦 Трафик за все время</b>: {format_bytes(user["lifetimeUsedTrafficBytes"])}
+<b>⚙️ Технический ID</b>: <code>{user["username"]}</code>
 """
     try:
         await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=user["subscriptionUrl"], user_status=user["status"]))
+                                     reply_markup=usermenu_kb_sub(user_status=user["status"]))
     except TelegramBadRequest as e:
         pass

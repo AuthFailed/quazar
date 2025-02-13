@@ -25,13 +25,10 @@ def usermenu_kb_main():
     return keyboard
 
 
-def usermenu_kb_sub(user_status: str, sub_link: str = "https://google.com"):
+def usermenu_kb_sub(user_status: str):
     buttons = []
     if user_status == "ACTIVE":
         buttons.extend([
-            [
-                InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
-            ],
             [
                 InlineKeyboardButton(text='⬆️ Лимит', url="https://t.me/tribute/app?startapp=djXK"),
                 InlineKeyboardButton(text='💳 Оплата', url="https://t.me/tribute/app?startapp=snKl")
