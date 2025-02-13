@@ -15,7 +15,6 @@ requests
 # asyncpg
 
 DateTime~=5.5
-marzban~=0.4.1
 typing_extensions~=4.12.2
 aiohttp~=3.11.11
 yarl~=1.18.3
