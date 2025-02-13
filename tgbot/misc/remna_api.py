@@ -145,7 +145,6 @@ def format_date(timestamp: str):
     "Sep": "сен.", "Oct": "окт.", "Nov": "нояб.", "Dec": "дек."
     }
 
-    timestamp = "2029-12-31T11:01:22.952Z"
     dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     # Format the date and time
