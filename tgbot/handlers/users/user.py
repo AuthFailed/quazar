@@ -11,7 +11,6 @@ import os
 from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
     usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, setup_pickdevice
 from tgbot.keyboards.user.instructions import androidtv_apps, ios_apps, android_apps, windows_apps
-# from tgbot.misc.db import get_reset_date
 from tgbot.misc.remna_api import format_bytes, get_user_by_tgid, revoke_user_sub, format_date, days_between_unix_timestamp
 
 user_router = Router()
@@ -171,6 +170,7 @@ async def usermenu_instructions(callback: CallbackQuery, state: FSMContext) -> N
     await state.clear()
 
     device = callback.data.split('_')[1]
+    message = ""
     if device == "ios":
         message = """<b>⭐ Квазар | Инструкции для iOS</b>
         
@@ -206,8 +206,7 @@ async def usermenu_instructions(callback: CallbackQuery, state: FSMContext) -> N
 Если не знаешь какое выбрать - бери то, что помечено <b>🔥огоньком</b>
 Это рекомендуемое приложение для твоего устройства"""
 
-        await callback.message.edit_text(message,
-                                         reply_markup=androidtv_apps())
+    await callback.message.edit_text(message, reply_markup=androidtv_apps())
 
 @user_router.callback_query(F.data == "usermenu_revokesub")
 async def usermenu_revokesub(callback: CallbackQuery) -> None:
