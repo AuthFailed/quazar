@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 
 from tgbot.keyboards.admin.inline import accept_to_channel, leaved_user
 from tgbot.keyboards.user.inline import channel_link
-from tgbot.misc.marzban_api import deactivate_user
 
 load_dotenv()
 channel_router = Router()

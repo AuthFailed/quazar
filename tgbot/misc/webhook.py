@@ -5,7 +5,7 @@ from aiohttp import web
 from dotenv import load_dotenv
 import os
 
-from tgbot.misc.db import get_user
+# from tgbot.misc.db import get_user
 
 
 load_dotenv()

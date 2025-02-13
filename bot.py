@@ -23,7 +23,7 @@ PORT = 7070
 
 async def start_webhook_server(host: str, port: int, bot: Bot):
     app = web.Application()
-    app.router.add_post('/webhook/marzban', handle_marzban_webhook(bot=bot))
+    # app.router.add_post('/webhook/marzban', handle_marzban_webhook(bot=bot))
     
     runner = web.AppRunner(app)
     await runner.setup()

@@ -4,8 +4,8 @@ from aiogram.types import Message, CallbackQuery
 
 from tgbot.filters.admin import AdminFilter
 from tgbot.keyboards.admin.inline import admin_menu, admin_vpn_menu_core, to_home
-from tgbot.misc.db import get_nodes_data
-from tgbot.misc.marzban_api import get_system_stats, restart_core, get_core_config
+# from tgbot.misc.db import get_nodes_data
+from tgbot.misc.remna_api import get_system_stats, restart_core, get_core_config
 
 admin_router = Router()
 admin_router.message.filter(AdminFilter())

@@ -8,7 +8,6 @@ def usermenu_kb_main():
         ],
         [
             InlineKeyboardButton(text="🔌 Подключение", callback_data="usermenu_setup"),
-            # InlineKeyboardButton(text="📜 Инструкции", callback_data="usermenu_instructions"),
         ],
         [
             InlineKeyboardButton(text="🔎 О проекте", callback_data="usermenu_faq"),
@@ -28,7 +27,7 @@ def usermenu_kb_main():
 
 def usermenu_kb_sub(user_status: str, sub_link: str = "https://google.com"):
     buttons = []
-    if user_status == "active":
+    if user_status == "ACTIVE":
         buttons.extend([
             [
                 InlineKeyboardButton(text='😎 Открыть подписку', web_app=WebAppInfo(url=sub_link))
@@ -38,15 +37,15 @@ def usermenu_kb_sub(user_status: str, sub_link: str = "https://google.com"):
                 InlineKeyboardButton(text='💳 Оплата', url="https://t.me/tribute/app?startapp=snKl")
             ]
         ])
-    elif user_status == "disabled" or user_status == "on_hold":
+    elif user_status == "DISABLED":
         buttons.append([
             InlineKeyboardButton(text='🚨 Поддержка', url="https://t.me/quazar_supp")
         ])
-    elif user_status == "limited":
+    elif user_status == "LIMITED":
         buttons.append([
             InlineKeyboardButton(text='⬆️ Увеличить лимит', url="https://t.me/tribute/app?startapp=djXK")
         ])
-    elif user_status == "expired":
+    elif user_status == "EXPIRED":
         buttons.append([
             InlineKeyboardButton(text='💳 Оплатить', url="https://t.me/tribute/app?startapp=snKl")
         ])
@@ -107,7 +106,7 @@ def setup_pickdevice():
         ],
         [
             InlineKeyboardButton(text="📱 Linux (нет)", callback_data="setup_linux"),
-            InlineKeyboardButton(text="📺 AndroidTV (нет)", callback_data="setup_androidtv"),
+            InlineKeyboardButton(text="📺 AndroidTV", callback_data="setup_androidtv"),
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu"),

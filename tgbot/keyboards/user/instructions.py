@@ -7,7 +7,6 @@ def ios_apps():
             InlineKeyboardButton(text="🔥 Streizand", callback_data="ios_app_streizand"),
         ],
         [
-            InlineKeyboardButton(text="Hiddify", callback_data="ios_app_hiddify"),
             InlineKeyboardButton(text="V2Box", callback_data="ios_app_v2box"),
         ],
         [
@@ -28,8 +27,7 @@ def android_apps():
             InlineKeyboardButton(text="🔥 Happ", callback_data="android_app_happ"),
         ],
         [
-            InlineKeyboardButton(text="V2RayNG", callback_data="android_app_v2rayng"),
-            InlineKeyboardButton(text="Hiddify", callback_data="android_app_hiddify")
+            InlineKeyboardButton(text="V2RayNG", callback_data="android_app_v2rayng")
         ],
         [
             InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
@@ -50,9 +48,6 @@ def windows_apps():
         ],
         [
             InlineKeyboardButton(text="v2rayN", callback_data="windows_app_v2rayn"),
-            InlineKeyboardButton(text="Hiddify", callback_data="windows_app_hiddify"),
-        ],
-        [
             InlineKeyboardButton(text="InvisibleMan", callback_data="windows_app_invisibleman"),
         ],
         [
@@ -67,7 +62,24 @@ def windows_apps():
     return keyboard
 
 
-def back_to_apps(device, sub_link=None):
+def androidtv_apps():
+    buttons = [
+        [
+            InlineKeyboardButton(text="🔥 VPN4TV", callback_data="androidtv_app_vpn4tv"),
+        ],
+        [
+            InlineKeyboardButton(text="⬅️ Назад", callback_data="usermenu_setup"),
+            InlineKeyboardButton(text="🏠 На главную", callback_data="usermenu"),
+        ],
+    ]
+
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=buttons,
+    )
+    return keyboard
+
+
+def back_to_apps(device):
     device_apps = None
     match device:
         case "ios":
@@ -84,10 +96,6 @@ def back_to_apps(device, sub_link=None):
             device_apps = "setup_androidtv"
 
     buttons = []
-    if sub_link:
-        buttons.append([
-            InlineKeyboardButton(text="😎 Открыть подписку", url=sub_link)
-        ])
 
     buttons.append([
         InlineKeyboardButton(text="⬅️ Назад", callback_data=device_apps),

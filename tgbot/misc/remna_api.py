@@ -2,118 +2,84 @@ import json
 import os
 import random
 import string
+import aiohttp
+import requests
 from datetime import datetime
 
 import pytz
 from dotenv import load_dotenv
 
-from marzban import MarzbanAPI, UserModify, UserCreate, ProxySettings
-
 load_dotenv()
 
+url = os.environ.get("REMNA_URL") + "/api"
+headers = {
+    'accept': 'application/json',
+    'Authorization': f'Bearer {os.environ.get("REMNA_TOKEN")}'
+}
 
 # Действия с пользователями
 async def create_user(user_id):
     """Создание пользователя"""
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'),
-                                password=os.environ.get('MARZBAN_PASSWORD'))
-
-    new_user = UserCreate(
-        username=generate_username(),
-        proxies={
-            "vless": ProxySettings(
-                flow="xtls-rprx-vision",
-            )
-        },
-        inbounds={
-            'vless': [
-                'VLESS TCP REALITY',
-                'RU-DE VLESS TCP REALITY',
-                'RU-FN VLESS TCP REALITY',
-                'RU-SW VLESS TCP REALITY'
-            ]
-        },
-        status="active",
-        data_limit=107374182400,  # 100GB
-        note=str(user_id),
-        data_limit_reset_strategy="month"
-    )
-    new_user = await api.add_user(user=new_user, token=token.access_token)
+    
     return new_user
 
+async def get_user_by_tgid(tgid: int):
+    api_url = f'{url}/users/v2'
 
-async def is_user_created(user_id):
-    user = await get_user_by_id(user_id)
-    if user is None:
-        return False
-    else:
-        return user
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(api_url, headers=headers) as response:
+                if response.status != 200:
+                    text = await response.text()
+                    print(f"Error: {response.status}")
+                    print(text)
+                    return None
 
+                try:
+                    json_response = await response.json()
+                    users = json_response.get('response', {}).get('users', [])
 
-async def activate_user(user_id):
-    """Активация пользователя"""
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'),
-                                password=os.environ.get('MARZBAN_PASSWORD'))
+                    for user in users:
+                        username = user.get('username', '')
+                        if str(tgid) in username:
+                            return user
 
-    user = await get_user_by_id(user_id)
-    username = user.username
+                    return None
 
-    user = await api.modify_user(
-        token=token.access_token,
-        username=username,
-        user=UserModify(status="active")
-    )
+                except (ValueError, KeyError) as e:
+                    print(f"Error processing response: {e}")
+                    return None
 
-    await api.close()
-    return user
+        except aiohttp.ClientError as e:
+            print(f"Error during request: {e}")
+            return None
 
-
-async def deactivate_user(user_id):
-    """Деактивация пользователя"""
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
-
-    user = await get_user_by_id(user_id)
-    username = user.username
-
-    user = await api.modify_user(
-        token=token.access_token,
-        username=username,
-        user=UserModify(status="disabled")
-    )
-
-    await api.close()
-    return user
-
-
-async def get_user_by_id(user_id):
-    """Получение пользователя по user_id"""
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
-
-    users_response = await api.get_users(
-        token=token.access_token,
-        search=str(user_id),
-        limit=1
-    )
-
-    await api.close()
-    return users_response.users[0] if users_response.users else None
-
-
-async def revoke_user_sub(user_id):
+async def revoke_user_sub(tgid):
     """Сброс ссылки на подписку"""
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
+    user = await get_user_by_tgid(tgid)
+    api_url = f'{url}/users/revoke/{user['uuid']}'
+    print(user)
+    print(api_url)
 
-    api_response = await api.revoke_user_subscription(
-        user_id,
-        token=token.access_token,
-    )
-    await api.close()
-    return api_response if api_response else None
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.patch(api_url, headers=headers) as response:
+                if response.status != 200:
+                    return None
+
+                try:
+                    json_response = await response.json()
+                    user = json_response.get('response', {})
+
+                    return user
+
+                except (ValueError, KeyError) as e:
+                    print(f"Error processing response: {e}")
+                    return None
+
+        except aiohttp.ClientError as e:
+            print(f"Error during request: {e}")
+            return None
 
 
 # Действия с ядром
@@ -223,20 +189,21 @@ def generate_username(length=6):
     return ''.join(random.choice(characters) for _ in range(length))
 
 
-def format_date(timestamp):
-    # Russian month names in genitive case
-    months_ru = [
-        'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
-    ]
+def format_date(timestamp: str):
+    month_map = {
+    "Jan": "янв.", "Feb": "фев.", "Mar": "мар.", "Apr": "апр.",
+    "May": "мая", "Jun": "июн.", "Jul": "июл.", "Aug": "авг.",
+    "Sep": "сен.", "Oct": "окт.", "Nov": "нояб.", "Dec": "дек."
+    }
 
-    # Convert timestamp to datetime
-    date = datetime.fromtimestamp(timestamp)
+    timestamp = "2029-12-31T11:01:22.952Z"
+    dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-    # Manually create the Russian-formatted date string
-    russian_date_string = f"{date.day} {months_ru[date.month - 1]} {date.year}"
-
-    return russian_date_string
+    # Format the date and time
+    formatted_date = dt.strftime("%d %b %Y %H:%M")
+    for en, ru in month_map.items():
+        formatted_date = formatted_date.replace(en, ru)
+    return formatted_date
 
 
 def format_days(days):
@@ -262,25 +229,49 @@ def format_days(days):
 
 
 def days_between_unix_timestamp(unix_timestamp):
-    """
-    Calculate the number of days between a Unix timestamp and current date in Moscow.
-
-    Args:
-        unix_timestamp (int or float): Unix timestamp in seconds
-
-    Returns:
-        str: Formatted string with number of days
-    """
-    # Create Moscow timezone
-    moscow_tz = pytz.timezone('Europe/Moscow')
-
-    # Convert Unix timestamp to datetime
+    """Calculate days between a Unix timestamp and now in Moscow."""
+    moscow_tz = pytz.timezone("Europe/Moscow")
     target_date = datetime.fromtimestamp(unix_timestamp, tz=moscow_tz)
-
-    # Get current time in Moscow
     current_time = datetime.now(moscow_tz)
-
-    # Calculate days difference
     days_difference = (target_date.date() - current_time.date()).days
+    return format_days(days_difference)  # Assuming format_days is defined
 
-    return format_days(days_difference)
+async def activate_tv(uuid, sub):
+    url = "https://api.vpn4tv.com/submit"
+    
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'DNT': '1',
+        'Origin': 'https://api.vpn4tv.com',
+        'Referer': 'https://api.vpn4tv.com/submit',
+        'Sec-Ch-Ua': '"Not=A?Brand";v="99", "Chromium";v="118"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
+    }
+    
+    # Create form data
+    form = aiohttp.FormData()
+    form.add_field('uuid', uuid)
+    form.add_field('vpnConfigText', sub)
+    form.add_field('vpnConfig', '', 
+                   filename='',
+                   content_type='application/octet-stream')
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=form, headers=headers) as resp:
+                if resp.status == 200:
+                    text = await resp.text()
+                    return "<div class=\"mt-3 alert alert-success\" role=\"alert\">" in text and "успешно обработана" in text
+                return False
+    except aiohttp.ClientError:
+        return False
