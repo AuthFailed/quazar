@@ -20,4 +20,3 @@ typing_extensions~=4.12.2
 aiohttp~=3.11.11
 yarl~=1.18.3
 python-dotenv~=1.0.1
-mariadb~=1.1.11
