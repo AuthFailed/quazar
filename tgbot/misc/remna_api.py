@@ -52,7 +52,7 @@ async def get_user_by_tgid(tgid: int):
 async def revoke_user_sub(tgid):
     """Сброс ссылки на подписку"""
     user = await get_user_by_tgid(tgid)
-    api_url = f'{url}/users/revoke/{user['uuid']}'
+    api_url = f'{url}/users/revoke/{user["uuid"]}'  # Correct version
     print(user)
     print(api_url)
 
