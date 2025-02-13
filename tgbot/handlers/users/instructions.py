@@ -211,5 +211,5 @@ async def proccess_tv_setup(message: Message, state: FSMContext):
     await state.clear()
     user = await get_user_by_tgid(message.chat.id)
     activate_status = await activate_tv(uuid=message.text, sub=user["subscriptionUrl"])
-    if activate_status: message.answer("Успешно активировали ключ, подожди минутку")
+    if activate_status: await message.bot.send_message(chat_id=message.chat.id, text="Успешно активировали приложение, подожди немного для его активации")
     await message.bot.delete_message(message.chat.id, message.message_id)
