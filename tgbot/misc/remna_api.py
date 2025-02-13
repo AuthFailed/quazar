@@ -17,11 +17,6 @@ headers = {
     'Authorization': f'Bearer {os.environ.get("REMNA_TOKEN")}'
 }
 
-# Действия с пользователями
-async def create_user(user_id):
-    """Создание пользователя"""
-    
-    return new_user
 
 async def get_user_by_tgid(tgid: int):
     api_url = f'{url}/users/v2'
@@ -80,52 +75,6 @@ async def revoke_user_sub(tgid):
         except aiohttp.ClientError as e:
             print(f"Error during request: {e}")
             return None
-
-
-# Действия с ядром
-async def get_system_stats():
-    """Функция возвращает json следующего вида:
-    {
-    "version": "x",
-    "mem_total": "x GB",
-    "mem_used": "x GB",
-    "cpu_cores": x,
-    "cpu_usage": "x%",
-    "total_user": x,
-    "users_active": x,
-    "incoming_bandwidth": "x MB",
-    "outgoing_bandwidth": "x GB",
-    "incoming_bandwidth_speed": "x KB/s",
-    "outgoing_bandwidth_speed": "x KB/s"
-    }
-    """
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
-
-    system_stats = await api.get_system_stats(token=token.access_token)
-    formatted_stats = format_system_stats(system_stats)
-
-    await api.close()
-    return formatted_stats
-
-
-async def get_core_config():
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
-
-    core_config = await api.get_core_config(token=token.access_token)
-    formatted_config = json.dumps(core_config, indent=2)
-    await api.close()
-    return formatted_config
-
-
-async def restart_core():
-    api = MarzbanAPI(base_url=os.environ.get('MARZBAN_URL'))
-    token = await api.get_token(username=os.environ.get('MARZBAN_LOGIN'), password=os.environ.get('MARZBAN_PASSWORD'))
-
-    await api.restart_core(token=token.access_token)
-    await api.close()
-
 
 # Функции-хелперы
 def format_bytes(bytes_value):
