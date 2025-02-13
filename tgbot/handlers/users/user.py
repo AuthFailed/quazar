@@ -87,7 +87,7 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
     sub_status = ""
     match user["status"]:
         case "ACTIVE":
-            sub_status = f"""<b>🎫 Подписка</b>: {f"до {format_date(user["expireAt"])}" if user["expireAt"] else "♾️"}
+            sub_status = f"""<b>🎫 Подписка</b>: {"до " + format_date(user["expireAt"]) if user["expireAt"] else "♾️"}
 <b>📊 Использовано</b>: {format_bytes(user["usedTrafficBytes"])} из {format_bytes(user["trafficLimitBytes"])}"""
         case "LIMITED":
             sub_status = f"""<b>🎫 Подписка</b>: ❌ Лимит ({user["expire"]})
@@ -239,7 +239,7 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
     sub_status = ""
     match user["status"]:
         case "ACTIVE":
-            sub_status = f"""<b>🎫 Подписка</b>: {f"до {format_date(user["expireAt"])}" if user["expireAt"] else "♾️"}
+            sub_status = f"""<b>🎫 Подписка</b>: {"до " + format_date(user["expireAt"]) if user["expireAt"] else "♾️"}
 <b>📊 Использовано</b>: {format_bytes(user["usedTrafficBytes"])} из {format_bytes(user["trafficLimitBytes"])}"""
         case "LIMITED":
             sub_status = f"""<b>🎫 Подписка</b>: ❌ Лимит ({user["expire"]})
