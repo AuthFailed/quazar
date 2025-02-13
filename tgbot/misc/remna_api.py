@@ -238,40 +238,17 @@ def days_between_unix_timestamp(unix_timestamp):
 
 async def activate_tv(uuid, sub):
     url = "https://api.vpn4tv.com/submit"
-    
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'max-age=0',
-        'DNT': '1',
-        'Origin': 'https://api.vpn4tv.com',
-        'Referer': 'https://api.vpn4tv.com/submit',
-        'Sec-Ch-Ua': '"Not=A?Brand";v="99", "Chromium";v="118"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': '"Windows"',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
-    }
-    
-    # Create form data
-    form = aiohttp.FormData()
-    form.add_field('uuid', uuid)
-    form.add_field('vpnConfigText', sub)
-    form.add_field('vpnConfig', '', 
-                   filename='',
-                   content_type='application/octet-stream')
+    headers = {"Content-Type": "application/json"}
+    data = {"uuid": uuid, "vpnConfigText": sub}
 
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, data=form, headers=headers) as resp:
-                if resp.status == 200:
-                    text = await resp.text()
-                    return "<div class=\"mt-3 alert alert-success\" role=\"alert\">" in text and "успешно обработана" in text
-                return False
-    except aiohttp.ClientError:
-        return False
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(url, headers=headers, json=data) as resp:  # Use json parameter for proper JSON encoding
+                status_code = resp.status
+                response_text = await resp.text()  # Get the response body as text
+                return status_code, response_text # Return both status code and response body
+
+
+        except aiohttp.ClientError as e:
+            print(f"Error: {e}")
+            return None, None  # Return None for both if there's an error
