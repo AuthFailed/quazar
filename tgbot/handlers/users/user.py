@@ -5,14 +5,14 @@ from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from dotenv import load_dotenv
+from aiogram.fsm.context import FSMContext
 import os
 
 from tgbot.keyboards.user.inline import to_home, usermenu_kb_sub, \
     usermenu_kb_revokesub, usermenu_kb_main, usermenu_kb_changestatus, setup_pickdevice
-from tgbot.keyboards.user.instructions import ios_apps, android_apps, windows_apps
-from tgbot.misc.db import get_reset_date
-from tgbot.misc.marzban_api import get_user_by_id, format_bytes, revoke_user_sub, is_user_created, create_user, \
-    activate_user, deactivate_user, format_date, days_between_unix_timestamp
+from tgbot.keyboards.user.instructions import androidtv_apps, ios_apps, android_apps, windows_apps
+# from tgbot.misc.db import get_reset_date
+from tgbot.misc.remna_api import format_bytes, get_user_by_tgid, revoke_user_sub, format_date, days_between_unix_timestamp
 
 user_router = Router()
 load_dotenv()
@@ -83,41 +83,37 @@ async def usermenu_sub(callback: CallbackQuery) -> None:
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         return
 
-    if not await is_user_created(callback.from_user.id):
-        user = await create_user(callback.from_user.id)
-    else:
-        user = await get_user_by_id(user_id=callback.from_user.id)
-
-    reset_date = await get_reset_date(user.username)
+    user = await get_user_by_tgid(tgid=callback.from_user.id)
 
     sub_status = ""
-    match user.status:
-        case "active":
-            sub_status = f"""🎫 Подписка: {format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}
-💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
-♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>"""
-        case "disabled":
-            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b>"""
-        case "limited":
-            sub_status = f"""🎫 Подписка: <b>❌ Лимит</b> ({format_date(user.expire)})
-💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
-♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>"""
-        case "expired":
-            sub_status = f"""🎫 Подписка: <b>❌ Истекла {format_date(user.expire)}</b>"""
-        case "on_hold":
-            sub_status = f"""🎫 Подписка: <b>⏳ На проверке</b> ({format_date(user.expire)})"""
+    match user["status"]:
+        case "ACTIVE":
+            sub_status = f"""<b>🎫 Подписка</b>: {f"до {format_date(user["expireAt"])}" if user["expireAt"] else "♾️"}
+<b>📊 Использовано</b>: {format_bytes(user["usedTrafficBytes"])} из {format_bytes(user["trafficLimitBytes"])}"""
+        case "LIMITED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Лимит ({user["expire"]})
+<b>📊 Использовано</b>: {format_bytes(user["used_traffic"])} из {format_bytes(user["trafficLimitBytes"])}"""
+        case "DISABLED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Отключена"""
+        
+        case "EXPIRED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Истекла {user["expire"]}"""
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 {sub_status}
+<b>♻️ Сброс лимита</b>: каждое 1 число месяца
+
+<b>🔗 Ссылка-подписка для клиента</b>:
+<code>{user["subscriptionUrl"]}</code>
 
 <b>Доп. инфо</b>
-🚦 Трафик за все время: <b>{format_bytes(user.lifetime_used_traffic)}</b>
-⚙️ Технический ID: <code>{user.username}</code>
+<b>🚦 Трафик за все время</b>: {format_bytes(user["lifetimeUsedTrafficBytes"])}
+<b>⚙️ Технический ID</b>: <code>{user["username"]}</code>
 """
     try:
         await callback.message.edit_text(ready_message,
-                                     reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, user_status=user.status))
+                                     reply_markup=usermenu_kb_sub(user_status=user["status"]))
     except TelegramBadRequest as e:
         pass
 
@@ -166,12 +162,13 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
 
 
 @user_router.callback_query(lambda c: c.data.startswith("setup_"))
-async def usermenu_instructions(callback: CallbackQuery) -> None:
+async def usermenu_instructions(callback: CallbackQuery, state: FSMContext) -> None:
     """Раздел инструкций"""
     if not await is_user_in_channel(callback.from_user.id, bot=callback.bot):
         return
 
     await callback.answer()
+    await state.clear()
 
     device = callback.data.split('_')[1]
     if device == "ios":
@@ -201,9 +198,16 @@ async def usermenu_instructions(callback: CallbackQuery) -> None:
 
 Если не знаешь какое выбрать - бери то, что помечено <b>🔥огоньком</b>
 Это рекомендуемое приложение для твоего устройства"""
+    elif device == "androidtv":
+        message = """<b>⭐ Квазар | Инструкции для AndroidTV</b>
+
+Выбери приложение в списке ниже
+
+Если не знаешь какое выбрать - бери то, что помечено <b>🔥огоньком</b>
+Это рекомендуемое приложение для твоего устройства"""
 
         await callback.message.edit_text(message,
-                                         reply_markup=windows_apps())
+                                         reply_markup=androidtv_apps())
 
 @user_router.callback_query(F.data == "usermenu_revokesub")
 async def usermenu_revokesub(callback: CallbackQuery) -> None:
@@ -231,37 +235,36 @@ async def usermenu_revokesub_agree(callback: CallbackQuery) -> None:
         return
 
     await callback.answer("Обнуляю подписку...")
-    user = await get_user_by_id(user_id=callback.from_user.id)
-    await revoke_user_sub(user.username)
-
-    reset_date = await get_reset_date(user.username)
+    user = await revoke_user_sub(callback.from_user.id)
 
     sub_status = ""
-    match user.status:
-        case "active":
-            sub_status = f"""🎫 Подписка: {format_date(user.expire) + f' ({days_between_unix_timestamp(user.expire)})' if user.expire else "♾️"}
-💿 Лимит: <b>{format_bytes(user.used_traffic)} / {format_bytes(user.data_limit)}</b>
-♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>"""
-        case "disabled":
-            sub_status = f"""🎫 Подписка: <b>❌ Отключена</b>"""
-        case "limited":
-            sub_status = f"""🎫 Подписка: <b>❌ Лимит</b>
-♻️ Сброс лимита: <b>каждое {reset_date} число месяца</b>"""
-        case "expired":
-            sub_status = f"""🎫 Подписка: <b>❌ Истекла</b>"""
-        case "on_hold":
-            sub_status = f"""🎫 Подписка: <b>⏳ На проверке</b>"""
+    match user["status"]:
+        case "ACTIVE":
+            sub_status = f"""<b>🎫 Подписка</b>: {f"до {format_date(user["expireAt"])}" if user["expireAt"] else "♾️"}
+<b>📊 Использовано</b>: {format_bytes(user["usedTrafficBytes"])} из {format_bytes(user["trafficLimitBytes"])}"""
+        case "LIMITED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Лимит ({user["expire"]})
+<b>📊 Использовано</b>: {format_bytes(user["used_traffic"])} из {format_bytes(user["trafficLimitBytes"])}"""
+        case "DISABLED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Отключена"""
+        
+        case "EXPIRED":
+            sub_status = f"""<b>🎫 Подписка</b>: ❌ Истекла {user["expire"]}"""
 
     ready_message = f"""⭐ <b>Квазар | Подписка</b>
 
 {sub_status}
+<b>♻️ Сброс лимита</b>: каждое 1 число месяца
+
+<b>🔗 Ссылка-подписка для клиента</b>:
+<code>{user["subscriptionUrl"]}</code>
 
 <b>Доп. инфо</b>
-🚦 Трафик за все время: <b>{format_bytes(user.lifetime_used_traffic)}</b>
-⚙️ Технический ID: <code>{user.username}</code>
-    """
-
+<b>🚦 Трафик за все время</b>: {format_bytes(user["lifetimeUsedTrafficBytes"])}
+<b>⚙️ Технический ID</b>: <code>{user["username"]}</code>
+"""
     try:
-        await callback.message.edit_text(ready_message, reply_markup=usermenu_kb_sub(sub_link=user.subscription_url, user_status=user.status))
+        await callback.message.edit_text(ready_message,
+                                     reply_markup=usermenu_kb_sub(user_status=user["status"]))
     except TelegramBadRequest as e:
         pass
